@@ -1,0 +1,21 @@
+{
+    "name": "alcides",
+    "version": "1.0.0",
+    "description": "Yet another javascript unit testing framework.",
+    "repository": "git@github.com:augustinesaidimu/alcides.git",
+    "author": "saidimu",
+    "license": "MIT",
+    "main": "index.js",
+    "type": "module",
+    "scripts": {
+        "ci": "yarn install --frozen-lockfile"
+    },
+    "files": ["src/**/*", "index.*"],
+    "bin": {
+        "alcides": "index.js"
+    },
+    "publishConfig": {
+        "registry": "https://registry.npmjs.org/",
+        "tag": "latest"
+    }
+}
