@@ -12,11 +12,11 @@
         "clean": "rm -rf dist",
         "prebuild": "yarn clean",
         "build": "yarn tsc",
+        "test": "node ./dist/index.js",
         "build:watch": "yarn tsc --watch",
+        "test:watch": "nodemon --exec 'clear && yarn test' --watch dist -q",
         "pretest:ci": "yarn build",
         "test:ci": "yarn test",
-        "test": "node ./dist/index.js",
-        "test:watch": "nodemon -q",
         "build:dist": "./bin/dist.sh",
         "postversion": "cp -r package.json ../dist.package.json"
     },
@@ -31,6 +31,7 @@
         "nodemon": "^2.0.15",
         "prettier": "^2.5.1",
         "semantic-release": "^18.0.1",
+        "ts-node": "^10.4.0",
         "typescript": "^4.6.0-dev.20220116"
     },
     "release": {
