@@ -17,5 +17,8 @@
     "publishConfig": {
         "registry": "https://registry.npmjs.org/",
         "tag": "latest"
+    },
+    "dependencies": {
+        "chalk": "^5.0.0"
     }
 }
