@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/augustinesaidimu/alcides/compare/v1.3.0...v1.3.1) (2022-01-19)
+
+
+### Bug Fixes
+
+* add missing dependency ([ea506cc](https://github.com/augustinesaidimu/alcides/commit/ea506cc6c1498522cec029d11ebbc6fa3b3d5ba9))
+
 # [1.3.0](https://github.com/augustinesaidimu/alcides/compare/v1.2.0...v1.3.0) (2022-01-19)
 
 
