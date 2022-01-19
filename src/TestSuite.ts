@@ -1,141 +1,97 @@
-import {
-    TestSuiteResults,
-    TestResultsCollector,
-    createTestSuiteResultsCollector,
-} from './TestResults.js'
-import createResultsCollector from './TestResults.js'
-import createTestCase from './TestCase.js'
 import { TestCaseData } from './TestCase.js'
 
 export interface TestSuite {
-    suite: (id: string, fn: Function) => void
-    test: (id: string, fn: Function) => void
-    run: () => TestSuiteResults[]
-    setUp: (fn: Function) => void
-    tearDown: (fn: Function) => void
-}
-
-export interface TestSuiteData {
+    [key: string]: any
     id: string
-    hasSetup: boolean
+    hasSetUp: boolean
     hasTearDown: boolean
-    setUp: () => void | false
-    tearDown: () => void | false
+    setUp: Function
+    tearDown: Function
     tests: TestCaseData[]
-    suites: TestSuiteData[]
+    testSuites: TestSuite[]
 }
 
-export default (): TestSuite => {
-    const stack: any[] = []
+const initTestSuite = (id: string): TestSuite => ({
+    id,
+    hasSetUp: false,
+    hasTearDown: false,
+    setUp: () => {},
+    tearDown: () => {},
+    tests: [],
+    testSuites: [],
+})
 
-    let data: any = null
+export interface TestSuiteCreator {
+    createTestSuite: (id: string, fn: Function) => void
+    addTestCase: (id: string, fn: Function) => void
+    addSetUp: (fn: Function) => void
+    addTearDown: (fn: Function) => void
+    getTestSuites: () => TestSuite[]
+}
 
-    const suites: any[] = []
+export const TestSuiteCreator = (): TestSuiteCreator => {
+    const testSuites: TestSuite[] = []
+    const stack: TestSuite[] = []
+    let current: TestSuite | null = null
 
-    const startSuite = (id: string) => {
-        if (data !== null) {
-            stack.push(data)
+    const createTestSuite = (id: string, fn: Function) => {
+        const data = initTestSuite(id)
+
+        if (current !== null) {
+            stack.push(current)
         }
+        current = data
 
-        data = {
-            hasSetup: false,
-            hasTearDown: false,
-            id,
-            setUp: () => {},
-            tearDown: () => {},
-            tests: [],
-            suites: [],
-        }
-    }
+        fn()
 
-    const endSuite = () => {
-        if (stack.length != 0) {
-            stack[stack.length - 1].suites.push(data)
-            data = stack.pop()
+        if (stack.length > 0) {
+            const prev = stack.pop()
+            prev!.suites.push(current)
+            current = prev!
         } else {
-            suites.push(data)
-            data = null
+            testSuites.push(data)
+            current = null
         }
     }
+
+    const addTestCase = (id: string, testFunction: Function) => {
+        if (current === null)
+            throw new Error(`Cannot add tests outside of a suite.`)
+
+        current.tests.push({
+            id,
+            testFunction,
+        })
+    }
+
+    const addSupportCallback = (id: string, check: string, fn: Function) => {
+        if (current === null) {
+            throw new Error(`Cannot call ${id} outside of suite.`)
+        }
+
+        if (current![check]) {
+            throw new Error(`Cannot call ${id} twice.`)
+        }
+
+        current[id] = fn
+        current[check] = true
+    }
+
+    const addTearDown = (tearDown: Function) =>
+        addSupportCallback('tearDown', 'hasTearDown', tearDown)
+
+    const addSetUp = (setUp: Function) =>
+        addSupportCallback('setUp', 'hassetUp', setUp)
 
     return {
-        suite(id: string, fn: Function) {
-            startSuite(id)
-            fn()
-            endSuite()
-        },
-        test(id: string, testFunction: Function) {
-            data.tests.push({
-                id,
-                testFunction,
-            })
-        },
-        setUp(fn: Function) {
-            if (data.hasSetUp) {
-                throw new Error('Cannot call setUp twice.')
-            } else {
-                data.setUp = fn
-                data.hasSetup = true
-            }
-        },
-        tearDown(fn: Function) {
-            if (data.hasTearDown) {
-                throw new Error('Cannot call tearDown twice.')
-            } else {
-                data.tearDown = fn
-                data.hasTearDown = true
-            }
-        },
-        run(): TestSuiteResults[] {
-            const callBackHasError = (
-                { callBackFailed }: TestResultsCollector,
-                callBack: Function,
-                id: string
-            ): boolean => {
-                let result = false
-                try {
-                    callBack()
-                } catch (error) {
-                    result = true
-                    callBackFailed(id, error)
-                }
-
-                return result
-            }
-
-            const runSuite = ({
-                tests = false,
-                id = '',
-                setUp,
-                tearDown,
-                suites,
-            }: any): TestSuiteResults => {
-                const results = createTestSuiteResultsCollector(id)
-
-                if (tests) {
-                    const collector = createResultsCollector()
-                    if (
-                        !callBackHasError(collector, setUp, 'setUp') &&
-                        !callBackHasError(collector, tearDown, 'tearDown')
-                    ) {
-                        for (const test of tests) {
-                            createTestCase(
-                                Object.assign(test, { setUp, tearDown })
-                            ).run(collector)
-                        }
-                    }
-                    results.addTestCaseResults(collector.getResults())
-                }
-
-                for (const suite of suites) {
-                    results.addTestSuiteResults(runSuite(suite))
-                }
-
-                return results.getResults()
-            }
-
-            const results = runSuite({ suites })
-            return results.suites
+        createTestSuite,
+        addTestCase,
+        addSetUp,
+        addTearDown,
+        getTestSuites() {
+            return testSuites
         },
     }
 }
+
+export default TestSuiteCreator

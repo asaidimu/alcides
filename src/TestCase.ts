@@ -1,29 +1,31 @@
-import { TestResultsCollector } from './TestResults.js'
+import { TestCaseResultsCollector } from './TestCaseResults.js'
 
 export interface TestCaseData {
     id: string
     testFunction: Function
-    setUp: Function
-    tearDown: Function
+    setUp?: Function
+    tearDown?: Function
 }
 
 export interface TestCase {
     run: Function
 }
 
-export default (data: TestCaseData): TestCase => {
-    const { testFunction, id, setUp, tearDown } = data
+export const createTestCase = (data: TestCaseData): TestCase => {
+    const { testFunction, id, setUp = () => {}, tearDown = () => {} } = data
     return {
-        run({ testPassed, testFailed }: TestResultsCollector) {
-            setUp()
+        run({ testPassed, testFailed }: TestCaseResultsCollector) {
+            setUp!()
             try {
                 testFunction()
                 testPassed(id)
             } catch (error) {
                 testFailed(id, error)
             } finally {
-                tearDown()
+                tearDown!()
             }
         },
     }
 }
+
+export default createTestCase

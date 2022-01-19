@@ -1,5 +1,6 @@
-import { TestSuiteResults } from './TestResults.js'
+import { TestSuiteResults } from './TestSuiteResults.js'
 import chalk from 'chalk'
+import { getSymbolName } from './Symbols.js'
 
 const createStatusPrinter = ({ level = 1 }: any) => {
     const indentation = new Array(level * 2).fill(' ').join('')
@@ -44,12 +45,12 @@ const printSummary = (results: TestSuiteResults[]) => {
 }
 
 const createErrorPrinter = () => {
-    return ({ id, results, suites }: TestSuiteResults) => {
-        const { failedTests, errors } = results
+    return ({ id, results, suites, errors }: TestSuiteResults) => {
+        const { failedTests } = results
         const testErrors = Object.entries(failedTests)
-        const suiteErrors = Object.entries(errors)
+        const suiteErrorSymbols = Object.getOwnPropertySymbols(errors)
 
-        if (testErrors.length != 0 || suiteErrors.length != 0) {
+        if (testErrors.length != 0 || suiteErrorSymbols.length != 0) {
             console.log(`\n TestSuite: ${id}\n`)
         }
 
@@ -67,8 +68,9 @@ const createErrorPrinter = () => {
             }
             return result
         }
+
         const getLogger = (prefix: string) => {
-            return ([id, error]: [string, Error]) => {
+            return ([id, error]: [string | symbol, Error]) => {
                 const title = `    ${chalk.bold.green(id)}. ${chalk.yellow(
                     prefix
                 )}`
@@ -94,7 +96,11 @@ const createErrorPrinter = () => {
             }
         }
 
-        suiteErrors.forEach(getLogger('SuiteError'))
+        //suiteErrors.forEach(getLogger('SuiteError'))
+        suiteErrorSymbols.forEach((key) => {
+            getLogger('SuiteError')([getSymbolName(key), errors[key]])
+        })
+
         testErrors.forEach(getLogger('TestCaseError'))
 
         if (suites.length != 0) {
