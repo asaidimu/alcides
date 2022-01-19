@@ -4,6 +4,7 @@
 ![license](https://img.shields.io/github/license/augustinesaidimu/alcides)
 ![tag](https://img.shields.io/github/v/tag/augustinesaidimu/alcides?sort=semver)
 ![release](https://img.shields.io/github/workflow/status/augustinesaidimu/alcides/Release)
+![tests](https://img.shields.io/github/workflow/status/augustinesaidimu/alcides/Test?label=tests)
 
 ## Re-inventing the wheel.
 
