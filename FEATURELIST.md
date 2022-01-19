@@ -1,12 +1,12 @@
 ## Milestone 1
 
--   [ ] Run a test case.
--   [ ] Run multiple test cases. -> Define a test suite.
--   [ ] Run each test case in order i.e _setUp_ -> _testCase_ -> _tearDown_.
--   [ ] Catch failing *setUp*s and *tearDown*s.
--   [ ] Catch failing tests.
--   [ ] Record tests results.
--   [ ] Report test results.
+-   [x] Run a test case.
+-   [x] Run multiple test cases. -> Define a test suite.
+-   [x] Run each test case in order i.e _setUp_ -> _testCase_ -> _tearDown_.
+-   [x] Catch failing *setUp*s and *tearDown*s.
+-   [x] Catch failing tests.
+-   [x] Record test results.
+-   [x] Report test results.
 
 ## Milestone 2
 

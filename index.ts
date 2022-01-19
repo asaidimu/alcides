@@ -1,3 +1,3 @@
 #!/usr/bin/env node
 
-console.log('Hello, World!')
+import './tests/index.js'
