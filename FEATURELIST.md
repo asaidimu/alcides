@@ -10,15 +10,15 @@
 
 ## Milestone 2
 
--   [ ] Run multiple test suites.
--   [ ] Report results for each test suite.
--   [ ] Load Suites from a test folder.
--   [ ] Create executable runner.
+-   [x] Run multiple test suites.
+-   [x] Report results for each test suite.
+-   [x] Load Suites from a test folder.
+-   [x] Create executable runner.
 
 ## Milestone 3
 
 -   [ ] Pass state from setUp to tests.
 -   [ ] Pass state from setUp to tearDown.
--   [ ] Run asynchronous tests.
+-   [x] Run asynchronous tests.
 -   [ ] Run tests in parallel.
 -   [ ] Kill and Report long running tests.

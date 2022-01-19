@@ -14,10 +14,10 @@ export interface TestCase {
 export const createTestCase = (data: TestCaseData): TestCase => {
     const { testFunction, id, setUp = () => {}, tearDown = () => {} } = data
     return {
-        run({ testPassed, testFailed }: TestCaseResultsCollector) {
-            setUp!()
+        async run({ testPassed, testFailed }: TestCaseResultsCollector) {
+            await setUp!()
             try {
-                testFunction()
+                await testFunction()
                 testPassed(id)
             } catch (error) {
                 testFailed(id, error)

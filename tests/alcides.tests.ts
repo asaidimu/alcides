@@ -1,16 +1,12 @@
 import { assert } from 'chai'
 import createTestCase from '../src/TestCase.js'
 import TestSuiteCreator, { TestSuite } from '../src/TestSuite.js'
-import report from '../src/TestResultsReporter.js'
 import run from '../src/TestRunner.js'
 import { SetUpFunction, TearDownFunction } from '../src/Symbols.js'
 import testCaseResultsCollector from '../src/TestCaseResults.js'
-import { TestSuiteResults } from '../src/TestSuiteResults.js'
 
-const { createTestSuite, addTestCase, getTestSuites } = TestSuiteCreator()
-
-createTestSuite('Aclides test suite', () => {
-    addTestCase('Run a test case', () => {
+suite('Aclides test suite', () => {
+    test('Run a test case', async () => {
         const collector = testCaseResultsCollector()
 
         let wasRun = false
@@ -20,12 +16,13 @@ createTestSuite('Aclides test suite', () => {
                 wasRun = true
             },
         })
-        testCase.run(collector)
+
+        await testCase.run(collector)
 
         assert.isTrue(wasRun)
     })
 
-    addTestCase('Catch failing tests', () => {
+    test('Catch failing tests', async () => {
         const testCase = createTestCase({
             id: 'Failing test.',
             testFunction: () => {
@@ -33,7 +30,7 @@ createTestSuite('Aclides test suite', () => {
             },
         })
         const collector = testCaseResultsCollector()
-        testCase.run(collector)
+        await testCase.run(collector)
         const { count, passed, failed } = collector.results
         assert.deepEqual(
             { count, passed, failed },
@@ -41,14 +38,14 @@ createTestSuite('Aclides test suite', () => {
         )
     })
 
-    addTestCase('Record test results', () => {
+    test('Record test results', async () => {
         const testCase = createTestCase({
             id: 'Example test case',
             testFunction: () => {},
         })
 
         const collector = testCaseResultsCollector()
-        testCase.run(collector)
+        await testCase.run(collector)
         const { count, passed, failed } = collector.results
         assert.deepEqual(
             { count, passed, failed },
@@ -56,7 +53,7 @@ createTestSuite('Aclides test suite', () => {
         )
     })
 
-    addTestCase('Run multiple test cases.', () => {
+    test('Run multiple test cases.', async () => {
         const { createTestSuite, addTestCase, getTestSuites } =
             TestSuiteCreator()
 
@@ -68,7 +65,8 @@ createTestSuite('Aclides test suite', () => {
         })
 
         const testSuites: TestSuite[] = getTestSuites()
-        const { results } = run(testSuites)[0]
+        const res = await run(testSuites)
+        const { results } = res[0]
         const { count, passed, failed } = results
         assert.deepEqual(
             { count, passed, failed },
@@ -76,7 +74,7 @@ createTestSuite('Aclides test suite', () => {
         )
     })
 
-    addTestCase('Run each test case in order', () => {
+    test('Run each test case in order', async () => {
         const {
             createTestSuite,
             addTestCase,
@@ -92,7 +90,7 @@ createTestSuite('Aclides test suite', () => {
             addTearDown(() => state.push(3))
         })
         const testSuites: TestSuite[] = getTestSuites()
-        run(testSuites)
+        await run(testSuites)
         /*
          * the first 1, and 3 will be added as the
          * callbacks are being checked for errors
@@ -100,7 +98,7 @@ createTestSuite('Aclides test suite', () => {
         assert.deepEqual(state, [1, 3, 1, 2, 3])
     })
 
-    addTestCase('Catch failing setUps', () => {
+    test('Catch failing setUps', async () => {
         const {
             createTestSuite,
             addTestCase,
@@ -118,11 +116,12 @@ createTestSuite('Aclides test suite', () => {
             addTearDown(() => null)
         })
         const testSuites: TestSuite[] = getTestSuites()
-        const { errors } = run(testSuites)[0]
+        const res = await run(testSuites)
+        const { errors } = res[0]
         assert.deepEqual(errors[SetUpFunction].message, message)
     })
 
-    addTestCase('Catch failing tearDowns', () => {
+    test('Catch failing tearDowns', async () => {
         const {
             createTestSuite,
             addTestCase,
@@ -132,7 +131,7 @@ createTestSuite('Aclides test suite', () => {
         } = TestSuiteCreator()
 
         const message = 'Failing Tear Down'
-        createTestSuite('Run in order', () => {
+        createTestSuite('', () => {
             addSetUp(() => null)
             addTestCase('', () => null)
             addTearDown(() => {
@@ -140,11 +139,24 @@ createTestSuite('Aclides test suite', () => {
             })
         })
         const testSuites: TestSuite[] = getTestSuites()
-        const { errors } = run(testSuites)[0]
+        const res = await run(testSuites)
+        const { errors } = res[0]
         assert.deepEqual(errors[TearDownFunction].message, message)
     })
-})
 
-const testSuites: TestSuite[] = getTestSuites()
-const testSuiteResults: TestSuiteResults[] = run(testSuites)
-report(testSuiteResults)
+    test('Load Suites from a test folder', async () => {
+        /*
+        const dir = "/tmp/tmp.ttVaP6l97P/tests"
+        const load = createTestLoader()
+
+        const testSuites = await load(dir)
+        const res = await run(testSuites)
+        const { results } = res[0]
+        const { count, passed, failed } = results
+        assert.deepEqual(
+            { count, passed, failed },
+            { count: 1, passed: 1, failed: 0 }
+        )
+        */
+    })
+})

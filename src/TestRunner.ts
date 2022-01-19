@@ -36,16 +36,19 @@ interface RunData {
     tearDown?: Function
 }
 
-const runTests = (data: RunData): TestCaseResultsCollector => {
+const runTests = async (data: RunData): Promise<TestCaseResultsCollector> => {
     const { tests, setUp, tearDown } = data
     const collector = testCaseResultsCollector()
     for (const test of tests!) {
-        createTestCase(Object.assign(test, { setUp, tearDown })).run(collector)
+        const testCase = createTestCase(
+            Object.assign(test, { setUp, tearDown })
+        )
+        await testCase.run(collector)
     }
     return collector
 }
 
-const runSuite = (data: RunData): TestSuiteResults => {
+const runSuite = async (data: RunData): Promise<TestSuiteResults> => {
     const results = createTestSuiteResultsCollector(data.id || '')
 
     if (
@@ -53,20 +56,22 @@ const runSuite = (data: RunData): TestSuiteResults => {
         !callBackHasError(results, data.setUp!, SetUpFunction) &&
         !callBackHasError(results, data.tearDown!, TearDownFunction)
     ) {
-        results.addTestCaseResults(runTests(data).results)
+        const collector = await runTests(data)
+        results.addTestCaseResults(collector.results)
     }
 
     if (data.suites) {
         for (const suite of data.suites) {
-            results.addTestSuiteResults(runSuite(suite))
+            const res = await runSuite(suite)
+            results.addTestSuiteResults(res)
         }
     }
 
     return results.getResults()
 }
 
-export const run = (data: TestSuite[]): TestSuiteResults[] => {
-    const { suites } = runSuite({ suites: data })
+export const run = async (data: TestSuite[]): Promise<TestSuiteResults[]> => {
+    const { suites } = await runSuite({ suites: data })
     return suites
 }
 

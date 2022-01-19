@@ -8,6 +8,7 @@ const createStatusPrinter = ({ level = 1 }: any) => {
     return ({ id, results, suites }: TestSuiteResults) => {
         const failedTests = Object.entries(results.failedTests)
         if (failedTests.length > 0 || results.passedTests.length > 0) {
+            console.log()
             console.log(`${indentation} ${chalk.bold(id)}`)
 
             results.passedTests.forEach((id: string) => {
@@ -31,15 +32,17 @@ const createStatusPrinter = ({ level = 1 }: any) => {
 }
 
 const printSummary = (results: TestSuiteResults[]) => {
-    const { passed, failed } = results.reduce(
+    const { count, passed, failed } = results.reduce(
         (acc: any, curr: TestSuiteResults) => {
+            acc.count += curr.count
             acc.passed += curr.passed
             acc.failed += curr.failed
             return acc
         },
-        { passed: 0, failed: 0 }
+        { count: 0, passed: 0, failed: 0 }
     )
 
+    if (count === 0) console.error(chalk.red(`  0 tests ran`))
     if (passed > 0) console.log(chalk.green(`  ${passed} passed`))
     if (failed > 0) console.log(chalk.red(`  ${failed} failed`))
 }
@@ -110,7 +113,6 @@ const createErrorPrinter = () => {
 }
 
 export default (results: TestSuiteResults[]) => {
-    console.log()
     results.forEach(createStatusPrinter({ level: 1 }))
     console.log()
     printSummary(results)
