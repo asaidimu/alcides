@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/augustinesaidimu/alcides/compare/v1.2.0...v1.3.0) (2022-01-19)
+
+
+### Features
+
+* Completed milestone 2 ([d710ffc](https://github.com/augustinesaidimu/alcides/commit/d710ffcf1303a2fad00df4b97107daf215403fab))
+
 # [1.2.0](https://github.com/augustinesaidimu/alcides/compare/v1.1.0...v1.2.0) (2022-01-19)
 
 ### Features
