@@ -9,6 +9,7 @@
     "type": "module",
     "scripts": {
         "ci": "yarn install --frozen-lockfile",
+        "debug": "node --inspect-brk ./dist/index.js",
         "clean": "rm -rf dist",
         "prebuild": "yarn clean",
         "build": "yarn tsc",
