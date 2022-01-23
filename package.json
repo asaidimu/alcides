@@ -13,9 +13,9 @@
         "clean": "rm -rf dist",
         "prebuild": "yarn clean",
         "build": "yarn tsc",
-        "test": "node ./dist/index.js",
+        "test": "yarn alcides",
         "build:watch": "yarn tsc --watch",
-        "test:watch": "nodemon --exec 'clear && yarn test' --watch dist -q",
+        "test:watch": "nodemon --exec 'clear && node ./node_modules/.bin/alcides' --watch dist -q",
         "pretest:ci": "yarn build",
         "test:ci": "yarn test",
         "build:dist": "./bin/dist.sh",
@@ -69,5 +69,10 @@
     },
     "dependencies": {
         "chalk": "^5.0.0"
+    },
+    "tests": {
+        "include": [
+            "dist/tests"
+        ]
     }
 }
