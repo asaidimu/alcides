@@ -106,3 +106,4 @@ yarn-error.log
 dist/tsconfig.tsbuildinfo
 dist/tests/**/*
 dist/**/*
+.project
