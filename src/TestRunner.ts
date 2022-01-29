@@ -7,7 +7,6 @@ import { TestSuiteResults } from './TestSuiteRunner.js'
 import { Worker } from 'worker_threads'
 import { exitWithInvalidConfigError } from './Errors.js'
 import { watch } from 'fs'
-import { logTime } from './TestResultsReporter.js'
 
 export interface TestRunnerInterface {
     findTests: { (): Promise<Array<string>> }
@@ -19,13 +18,6 @@ const formatPath = (name: string): string => {
         base: name,
         dir: process.cwd(),
     })
-}
-
-export const findFiles = async (
-    include: string | Array<string>
-): Promise<Array<string>> => {
-    const paths = await glob(include)
-    return paths.map((name) => formatPath(name))
 }
 
 export class TestRunner extends EventEmitter implements TestRunnerInterface {
@@ -80,7 +72,7 @@ export class TestRunner extends EventEmitter implements TestRunnerInterface {
     private async runInParallel(): Promise<Array<TestSuiteResults>> {
         const { workers } = this.config
 
-        const tests = (await findFiles(this.config.include)).reduce(
+        const tests = (await this.findTests()).reduce(
             (all: Array<Array<string>>, path: string, index: number) => {
                 all[index % workers].push(path)
                 return all
@@ -104,9 +96,7 @@ export class TestRunner extends EventEmitter implements TestRunnerInterface {
 
         this.running = true
 
-        const worker = await this.createWorker(
-            await findFiles(this.config.include)
-        )
+        const worker = await this.createWorker(await this.findTests())
 
         worker.on('message', (results: any) => {
             if (Array.isArray(results)) {
@@ -137,11 +127,15 @@ export class TestRunner extends EventEmitter implements TestRunnerInterface {
         } else if (this.config.watch) {
             return this.startWatcher()
         } else {
-            return this.runWorker(await findFiles(this.config.include))
+            return this.runWorker(await this.findTests())
         }
     }
 
     async findTests() {
-        return findFiles(this.config.include)
+        const paths = await glob(this.config.include)
+        if (paths.length === 0) {
+            exitWithInvalidConfigError(new Error('Could not find tests.'))
+        }
+        return paths.map((name) => formatPath(name))
     }
 }

@@ -1,12 +1,8 @@
 {
-    "name": "alcides",
-    "version": "1.0.0",
-    "description": "Yet another javascript unit testing framework.",
+    "private": "true",
     "repository": "git@github.com:asaidimu/alcides.git",
     "author": "saidimu",
     "license": "MIT",
-    "main": "index.js",
-    "types": "global.d.ts",
     "type": "module",
     "scripts": {
         "ci": "yarn install --frozen-lockfile",
@@ -79,15 +75,5 @@
         "fast-glob": "^3.2.11",
         "ora": "^6.0.1",
         "yargs": "^17.3.1"
-    },
-    "keywords": [
-        "unit testing",
-        "tdd",
-        "xunit",
-        "test",
-        "testing",
-        "testrunner",
-        "assert",
-        "framework"
-    ]
+    }
 }

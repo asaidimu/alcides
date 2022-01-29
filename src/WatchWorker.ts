@@ -29,6 +29,14 @@ const serializeErrors = (
     return serialized
 }
 
+const importTestFile = async (file: string): Promise<any> => {
+    try {
+        await import(file)
+    } catch (e) {
+        /* handle error */
+    }
+}
+
 const main = async () => {
     const { config, paths } = workerData
     const { getTestSuites, suite, test, setUp, tearDown }: TestSuiteCollector =
@@ -37,7 +45,7 @@ const main = async () => {
     Object.assign(global, { suite, test, setUp, tearDown, assert })
 
     for (const testFile of paths) {
-        await import(testFile)
+        await importTestFile(testFile)
     }
 
     const results = await run(new TestCaseRunner(config), getTestSuites())

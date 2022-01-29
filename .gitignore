@@ -109,3 +109,7 @@ dist/**/*
 .project
 resources
 resources/**/*
+UIFEATURES.md
+assets/**/*
+notes.norg
+issues
