@@ -1,31 +1,33 @@
-import { TestCaseResultsCollector } from './TestCaseResults.js'
+/** @namespace TestCase */
 
-export interface TestCaseData {
-    id: string
-    testFunction: Function
-    setUp?: Function
-    tearDown?: Function
-}
-
+/**
+ * TestCase
+ * @name TestCase
+ * @memberof TestCase
+ * */
 export interface TestCase {
-    run: Function
+    /**
+     * The description/id of the test case
+     *
+     * @name description
+     */
+    description: string | symbol
+
+    /**
+     * The test function that will run for this test case.
+     * @name testFunction
+     * @type TestFunction
+     */
+    testFunction: TestFunction
 }
 
-export const createTestCase = (data: TestCaseData): TestCase => {
-    const { testFunction, id, setUp = () => {}, tearDown = () => {} } = data
-    return {
-        async run({ testPassed, testFailed }: TestCaseResultsCollector) {
-            await setUp!()
-            try {
-                await testFunction()
-                testPassed(id)
-            } catch (error) {
-                testFailed(id, error)
-            } finally {
-                tearDown!()
-            }
-        },
-    }
-}
+/**
+ * A TestFunction
+ * @typedef TestFunction
+ * @name TestFunction
+ * @memberof TestCase
+ * @params { any } state - state used within the testFunction
+ * */
+export type TestFunction = (state?: any) => void | Promise<void>
 
-export default createTestCase
+export default TestCase

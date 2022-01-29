@@ -5,12 +5,13 @@
     "repository": "git@github.com:augustinesaidimu/alcides.git",
     "author": "saidimu",
     "license": "MIT",
-    "main": "index.js",
+    "main": "./index.js",
+    "types": "./types/index.d.ts",
     "type": "module",
     "scripts": {
         "ci": "yarn install --frozen-lockfile"
     },
-    "files": ["src/**/*", "index.*"],
+    "files": ["src/**/*.js", "index.js", "types/*.ts", "types/src/*.ts"],
     "bin": {
         "alcides": "index.js"
     },
@@ -20,10 +21,8 @@
     },
     "dependencies": {
         "chai": "^4.3.4",
-        "chalk": "^5.0.0"
-    },
-    "devDependencies": {
+        "chalk": "^5.0.0",
         "@types/chai": "^4.3.0",
-        "@types/node": "^17.0.8"
+        "workerpool": "^6.2.0"
     }
 }

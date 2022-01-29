@@ -1,9 +1,9 @@
 ## Milestone 1
 
 -   [x] Run a test case.
--   [x] Run multiple test cases. -> Define a test suite.
--   [x] Run each test case in order i.e _setUp_ -> _testCase_ -> _tearDown_.
--   [x] Catch failing *setUp*s and *tearDown*s.
+-   [x] Run multiple test cases.
+-   [x] Run each test case with hooks in order.
+-   [x] Catch failing hooks.
 -   [x] Catch failing tests.
 -   [x] Record test results.
 -   [x] Report test results.
@@ -17,8 +17,17 @@
 
 ## Milestone 3
 
--   [ ] Pass state from setUp to tests.
--   [ ] Pass state from setUp to tearDown.
+-   [x] Pass state from setUp to tests.
 -   [x] Run asynchronous tests.
--   [ ] Run tests in parallel.
--   [ ] Kill and Report long running tests.
+-   [x] Run tests in parallel.
+-   [x] Kill and Report long running tests.
+
+## Milestone 4
+
+-   [ ] Serve results via ipc -> named pipe.
+-   [ ] Create a client that can display results from named pipe.
+
+## Milestone 5
+
+-   [ ] Implement code coverage.
+-   [ ] Implement intelligent test analysis.

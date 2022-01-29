@@ -1,0 +1,18 @@
+{
+    "source": {
+        "include": ["src", "README.md"],
+        "includePattern": "\\.(jsx|js|ts|tsx)$"
+    },
+    "opts": {
+        "template": "node_modules/better-docs",
+        "recurse": true,
+        "destination": "docs"
+    },
+    "tags": {
+        "allowUnknownTags": ["optional"]
+    },
+    "plugins": ["node_modules/better-docs/typescript"],
+    "typescript": {
+        "moduleRoot": "src"
+    }
+}

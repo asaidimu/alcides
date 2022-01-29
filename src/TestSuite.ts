@@ -1,97 +1,197 @@
-import { TestCaseData } from './TestCase.js'
+import TestCase, { TestFunction } from '../src/TestCase.js'
+import { invalidActionError } from './Errors.js'
+import { getSymbolName, SETUP_HOOK, TEARDOWN_HOOK } from './Symbols.js'
 
-export interface TestSuite {
-    [key: string]: any
-    id: string
-    hasSetUp: boolean
-    hasTearDown: boolean
-    setUp: Function
-    tearDown: Function
-    tests: TestCaseData[]
-    testSuites: TestSuite[]
+/**
+ * Defines a collection of test suites related by fixtures
+ *
+ * @name TestSuite
+ * @namespace TestSuite
+ * @memberof TestSuite
+ */
+export type TestSuite = {
+    /**
+     * The description of the testCase. Use as a unique id.
+     */
+    description: string
+
+    /**
+     * Array containing TestCases
+     */
+    tests: TestCase[]
+
+    /**
+     * Callback that sets up fixtures. Run once before each testCase.
+     */
+    setUp: TestHook
+
+    /**
+     * Callback that clears fixtures. Run once before each testCase.
+     */
+    tearDown: TestHook
 }
 
-const initTestSuite = (id: string): TestSuite => ({
-    id,
-    hasSetUp: false,
-    hasTearDown: false,
-    setUp: () => {},
-    tearDown: () => {},
-    tests: [],
-    testSuites: [],
-})
+/**
+ * A collection of errors that occurred while the test suite was being run.
+ *
+ * @name TestSuiteErrors
+ * @memberof TestSuite
+ */
+export type TestSuiteErrors = { [key: symbol | string]: Error }
 
+/**
+ * Exposes methods used to create test suites.
+ * @interface
+ * @name TestSuiteCreator
+ * @memberof TestSuite
+ */
 export interface TestSuiteCreator {
-    createTestSuite: (id: string, fn: Function) => void
-    addTestCase: (id: string, fn: Function) => void
+    /**
+     * Adds a test case to the test suite
+     */
+    addTestCase: (description: string, testFunction: TestFunction) => void
+    /**
+     * Adds a setUp callback to the suite. Should be callable only once.
+     */
     addSetUp: (fn: Function) => void
+    /**
+     * Adds a tearDown callback to the suite. Should be callable only once.
+     */
     addTearDown: (fn: Function) => void
-    getTestSuites: () => TestSuite[]
+    /**
+     * Returns test suite data.
+     */
+    getTestSuite: () => TestSuite
 }
 
-export const TestSuiteCreator = (): TestSuiteCreator => {
-    const testSuites: TestSuite[] = []
-    const stack: TestSuite[] = []
-    let current: TestSuite | null = null
+/**
+ * Describes a fixture function
+ *
+ * @name FixtureFunction
+ * @memberof TestSuite
+ */
+export type TestHook = {
+    /**
+     * The function
+     */
+    (): any
 
-    const createTestSuite = (id: string, fn: Function) => {
-        const data = initTestSuite(id)
+    /**
+     * The id of the function.
+     */
+    id?: symbol | string
+}
 
-        if (current !== null) {
-            stack.push(current)
-        }
-        current = data
+/**
+ * Exposes an implementation of the TestSuiteCreator interface
+ *
+ * @name initTestSuiteCreator
+ * @function initTestSuiteCreator
+ * @param { string } description - the description of the testSuite
+ * @memberof TestSuite
+ */
+const initTestSuiteCreator = (description: string): TestSuiteCreator => {
+    const tests: TestCase[] = []
 
-        fn()
-
-        if (stack.length > 0) {
-            const prev = stack.pop()
-            prev!.suites.push(current)
-            current = prev!
-        } else {
-            testSuites.push(data)
-            current = null
-        }
+    const hooks: { [key: string]: TestHook } = {
+        setUp: function () {},
+        tearDown: function () {},
     }
 
-    const addTestCase = (id: string, testFunction: Function) => {
-        if (current === null)
-            throw new Error(`Cannot add tests outside of a suite.`)
-
-        current.tests.push({
-            id,
-            testFunction,
-        })
-    }
-
-    const addSupportCallback = (id: string, check: string, fn: Function) => {
-        if (current === null) {
-            throw new Error(`Cannot call ${id} outside of suite.`)
+    const addHook = (id: symbol | string, name: string, fun: TestHook) => {
+        if (hooks[name].id === id) {
+            throw invalidActionError(getSymbolName(id))
         }
 
-        if (current![check]) {
-            throw new Error(`Cannot call ${id} twice.`)
-        }
-
-        current[id] = fn
-        current[check] = true
+        fun.id = id
+        hooks[name] = fun
     }
-
-    const addTearDown = (tearDown: Function) =>
-        addSupportCallback('tearDown', 'hasTearDown', tearDown)
-
-    const addSetUp = (setUp: Function) =>
-        addSupportCallback('setUp', 'hassetUp', setUp)
 
     return {
-        createTestSuite,
-        addTestCase,
-        addSetUp,
-        addTearDown,
-        getTestSuites() {
-            return testSuites
+        getTestSuite(): TestSuite {
+            return {
+                description,
+                tests,
+                setUp: hooks['setUp'],
+                tearDown: hooks['tearDown'],
+            }
+        },
+        addTestCase(description: string, testFunction: TestFunction) {
+            tests.push({
+                description,
+                testFunction,
+            })
+        },
+        addSetUp(fn: Function) {
+            addHook(SETUP_HOOK, 'setUp', <TestHook>fn)
+        },
+        addTearDown(fn: Function) {
+            addHook(TEARDOWN_HOOK, 'tearDown', <TestHook>fn)
         },
     }
 }
 
-export default TestSuiteCreator
+export interface TestSuiteCollector {
+    suite: Function
+    test: Function
+    setUp: Function
+    tearDown: Function
+    getTestSuites: Function
+}
+
+export const createTestSuiteCollector = (): TestSuiteCollector => {
+    const stack: Array<TestSuiteCreator> = []
+    const all: Array<TestSuiteCreator> = []
+    let current: TestSuiteCreator | null = null
+
+    return {
+        suite(description: string, fn: Function) {
+            if (current !== null) {
+                stack.push(current)
+            }
+            current = initTestSuiteCreator(description)
+
+            fn()
+
+            if (stack.length > 0) {
+                const prev = <TestSuiteCreator>stack.pop()
+                all.push(current)
+                current = prev
+            } else {
+                all.push(current)
+                current = null
+            }
+        },
+        test(description: string, testFunction: TestFunction) {
+            if (current === null) {
+                throw invalidActionError('test()')
+            }
+            current.addTestCase(description, testFunction)
+        },
+        tearDown(fn: Function) {
+            if (current === null) {
+                throw invalidActionError('tearDown()')
+            }
+            current.addTearDown(fn)
+        },
+        setUp(fn: Function) {
+            if (current === null) {
+                throw invalidActionError('setUp()')
+            }
+            current.addSetUp(fn)
+        },
+        getTestSuites(): Array<TestSuite> {
+            const suites = all.reduce(
+                (acc: Array<TestSuite>, curr: TestSuiteCreator) => {
+                    acc.push(curr.getTestSuite())
+                    return acc
+                },
+                []
+            )
+
+            return suites
+        },
+    }
+}
+/** @see initTestSuiteCreator */
+export default initTestSuiteCreator

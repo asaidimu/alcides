@@ -1,121 +1,155 @@
-import { TestSuiteResults } from './TestSuiteResults.js'
+import { TestSuiteResults } from './TestSuiteRunner.js'
 import chalk from 'chalk'
 import { getSymbolName } from './Symbols.js'
 
-const createStatusPrinter = ({ level = 1 }: any) => {
-    const indentation = new Array(level * 2).fill(' ').join('')
+/* const formatErrorLocation = (str: string) => {
+    let result = '';
+    if (str.match(process.cwd())) {
+        const info = str
+        .trim()
+        .substring(10)
+        .substring(process.cwd().length + 1)
+        .split(':');
+        result = `@ ${chalk.bold.blue('./' + info[0])} : ${chalk.bold.blue(info[1])}`;
+    }
+    return result;
+}; */
 
-    return ({ id, results, suites }: TestSuiteResults) => {
-        const failedTests = Object.entries(results.failedTests)
-        if (failedTests.length > 0 || results.passedTests.length > 0) {
-            console.log()
-            console.log(`${indentation} ${chalk.bold(id)}`)
-
-            results.passedTests.forEach((id: string) => {
-                console.log(
-                    `${indentation}   ${chalk.green('')} ${chalk.grey(id)}`
-                )
+const getLogger = (prefix: string) => {
+    return ([id, error]: any) => {
+        const title = `    ${chalk.bold.green(id)}. ${chalk.yellow(prefix)}`
+        if (error.stack) {
+            const stack = error.stack.split('\n')
+            console.log(`${title}`) // ${chalk.grey(formatErrorLocation(stack[1]))}`);
+            stack.forEach((string: string, index: number) => {
+                let msg
+                if (index === 0) {
+                    msg = chalk.red(string)
+                } else {
+                    msg = chalk.grey(string)
+                }
+                console.error(`    ${msg}`)
             })
-
-            Object.entries(results.failedTests).forEach(([id, _]) => {
-                console.log(
-                    `${indentation}   ${chalk.red(``)} ${chalk.red(id)}`
-                )
-            })
-
-            if (suites.length != 0) {
-                console.log()
-                suites.forEach(createStatusPrinter({ level: level + 1 }))
-            }
+        } else {
+            console.log(title)
         }
+        console.log()
     }
 }
 
-const printSummary = (results: TestSuiteResults[]) => {
-    const { count, passed, failed } = results.reduce(
-        (acc: any, curr: TestSuiteResults) => {
-            acc.count += curr.count
-            acc.passed += curr.passed
-            acc.failed += curr.failed
-            return acc
+const printErrors = ({
+    results,
+    description,
+    errors,
+}: TestSuiteResults): void => {
+    const failed: any = Object.entries(results).reduce(
+        (all: any, curr: any) => {
+            if (curr[1].error !== null)
+                all.push([
+                    curr[0], // description
+                    curr[1].error, // error
+                ])
+            return all
         },
-        { count: 0, passed: 0, failed: 0 }
+        []
     )
 
-    if (count === 0) console.error(chalk.red(`  0 tests ran`))
-    if (passed > 0) console.log(chalk.green(`  ${passed} passed`))
-    if (failed > 0) console.log(chalk.red(`  ${failed} failed`))
-}
+    const suiteErrorSymbols = Object.keys(errors)
 
-const createErrorPrinter = () => {
-    return ({ id, results, suites, errors }: TestSuiteResults) => {
-        const { failedTests } = results
-        const testErrors = Object.entries(failedTests)
-        const suiteErrorSymbols = Object.getOwnPropertySymbols(errors)
+    if (failed.length != 0 || suiteErrorSymbols.length != 0) {
+        console.log(
+            `\n ${chalk.yellow('TestSuite')}: ${chalk.bold(description)}\n`
+        )
 
-        if (testErrors.length != 0 || suiteErrorSymbols.length != 0) {
-            console.log(`\n TestSuite: ${id}\n`)
-        }
-
-        const formatErrorLocation = (str: string) => {
-            let result = ''
-            if (str.match(process.cwd())) {
-                const info = str
-                    .trim()
-                    .substring(10)
-                    .substring(process.cwd().length + 1)
-                    .split(':')
-                result = `@ ${chalk.bold.blue(
-                    './' + info[0]
-                )} : ${chalk.bold.blue(info[1])}`
-            }
-            return result
-        }
-
-        const getLogger = (prefix: string) => {
-            return ([id, error]: [string | symbol, Error]) => {
-                const title = `    ${chalk.bold.green(id)}. ${chalk.yellow(
-                    prefix
-                )}`
-
-                if (error.stack) {
-                    const stack = error.stack.split('\n')
-
-                    console.log(
-                        `${title} ${chalk.grey(formatErrorLocation(stack[1]))}`
-                    )
-                    stack.forEach((string, index) => {
-                        let msg
-                        if (index === 0) {
-                            msg = chalk.red(string)
-                        } else {
-                            msg = chalk.grey(string)
-                        }
-                        console.error(`    ${msg}`)
-                    })
-                } else {
-                    console.log(title)
-                }
-            }
-        }
-
-        //suiteErrors.forEach(getLogger('SuiteError'))
         suiteErrorSymbols.forEach((key) => {
             getLogger('SuiteError')([getSymbolName(key), errors[key]])
         })
 
-        testErrors.forEach(getLogger('TestCaseError'))
-
-        if (suites.length != 0) {
-            suites.forEach(createErrorPrinter())
-        }
+        failed.forEach(getLogger('TestCaseError'))
     }
 }
 
-export default (results: TestSuiteResults[]) => {
-    results.forEach(createStatusPrinter({ level: 1 }))
-    console.log()
-    printSummary(results)
-    console.log()
-    results.forEach(createErrorPrinter())
+const printSuiteResults = ({
+    results,
+    description,
+}: TestSuiteResults): void => {
+    const indentation = new Array(2).fill(' ').join('')
+
+    const { passed, failed }: any = Object.entries(results).reduce(
+        (all: any, curr: any) => {
+            if (curr[1].error === null) all.passed.push(curr)
+            else all.failed.push(curr)
+            return all
+        },
+        { passed: [], failed: [] }
+    )
+
+    const getLogger = (passed: boolean = true) => {
+        return ([key, value]: any) => {
+            const duration = chalk.grey(
+                `(${Number(value.duration).toFixed(2)} ms)`
+            )
+            const status = passed ? chalk.green('') : chalk.red(``)
+            const message = passed ? chalk.grey(key) : chalk.red(key)
+
+            console.log(`${indentation}   ${status} ${message} ${duration}`)
+        }
+    }
+
+    if (passed.length > 0 || failed.length > 0) {
+        console.log(`${indentation} ${chalk.bold(description)}`)
+
+        passed.forEach(getLogger())
+        failed.forEach(getLogger(false))
+
+        console.log()
+    }
 }
+
+const printSummary = (suiteResults: Array<TestSuiteResults>) => {
+    type Summary = {
+        passed: number
+        failed: number
+        count: number
+    }
+
+    const reduceTestResults = (all: Summary, value: any) => {
+        all.count += 1
+        if (value.error === null) all.passed += 1
+        else all.failed += 1
+
+        return all
+    }
+
+    const reduceSuiteResults = (all: Summary, value: TestSuiteResults) => {
+        const { results } = value
+        return Object.values(results).reduce(reduceTestResults, all)
+    }
+
+    const { count, passed, failed }: Summary = suiteResults.reduce(
+        reduceSuiteResults,
+        <Summary>{ passed: 0, failed: 0, count: 0 }
+    )
+
+    if (count === 0) {
+        console.error(chalk.red(`  0 tests ran`))
+        return
+    }
+
+    if (passed > 0) console.log(chalk.green(`  ${passed} passed`))
+
+    if (failed > 0) console.log(chalk.red(`  ${failed} failed`))
+}
+
+export class TestResultsReporter {
+    async report(results: Array<TestSuiteResults>): Promise<void> {
+        console.log()
+        results.forEach(printSuiteResults)
+        console.log()
+        printSummary(results)
+        console.log()
+        results.forEach(printErrors)
+    }
+}
+
+export default TestResultsReporter

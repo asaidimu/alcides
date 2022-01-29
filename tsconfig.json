@@ -1,17 +1,20 @@
 {
     "compilerOptions": {
-        "incremental": true,
-        "target": "esnext",
-        "lib": ["esnext", "dom"],
-        "module": "esnext",
-        "allowJs": true,
-        "declaration": true,
-        "outDir": "./dist",
-        "esModuleInterop": true,
-        "forceConsistentCasingInFileNames": true,
         "strict": true,
+        "incremental": true,
+        "allowJs": false,
+        "esModuleInterop": true,
         "skipLibCheck": true,
-        "moduleResolution": "nodenext"
+        "declaration": true,
+        "forceConsistentCasingInFileNames": true,
+        "sourceMap": true,
+        "target": "esnext",
+        "module": "esnext",
+        "moduleResolution": "nodenext",
+        "lib": ["esnext", "dom"],
+        "rootDirs": ["src", "dist"],
+        "outDir": "./dist",
+        "declarationDir": "./dist/types"
     },
     "include": ["src/**/*", "./index.ts", "tests/**/*"],
     "exclude": ["node_modules"]
