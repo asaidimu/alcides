@@ -21,6 +21,7 @@ cat > "$TARGET/index.d.ts" <<EOF
 // Project: https://github.com/asaidimu/alcides
 // Definitions by: saidimu <https://github.com/asaidimu>
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
+// TypeScript Version: 4.6
 
 EOF
 
@@ -42,7 +43,7 @@ yarn
 yarn prettier --write types/alcides/**/*.ts
 yarn lint alcides
 
-git add . --sparse
+git add --sparse .
 git commit -m "chore: Updated types for alcides to v$FULL_VERSION" --allow-empty
 
 gh repo sync "$REPOSITORY"
