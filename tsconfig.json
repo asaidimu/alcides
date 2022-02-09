@@ -5,7 +5,6 @@
         "allowJs": false,
         "esModuleInterop": true,
         "skipLibCheck": true,
-        "declaration": true,
         "forceConsistentCasingInFileNames": true,
         "sourceMap": true,
         "target": "esnext",
@@ -13,8 +12,7 @@
         "moduleResolution": "nodenext",
         "lib": ["esnext", "dom"],
         "rootDirs": ["src", "dist"],
-        "outDir": "./dist",
-        "declarationDir": "./dist/types"
+        "outDir": "./dist"
     },
     "include": ["src/**/*", "./index.ts", "tests/**/*"],
     "exclude": ["node_modules"]

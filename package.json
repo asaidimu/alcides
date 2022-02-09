@@ -22,6 +22,7 @@
         "pretest:ci": "yarn build",
         "test:ci": "yarn test",
         "build:dist": "./bin/dist.sh",
+        "build:types": "./bin/types.sh",
         "postversion": "cp -r package.json ../dist.package.json"
     },
     "devDependencies": {

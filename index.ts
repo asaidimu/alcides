@@ -9,12 +9,28 @@ import TestResultsReporter from './src/TestResultsReporter.js'
 import path from 'path'
 import { readFile } from 'fs/promises'
 
+interface SuiteFunction {
+    (description: string, cb: () => void): void
+}
+
+interface TestFunction {
+    (description: string, cb: (state: any) => void): void
+}
+
+interface SetUpHook {
+    (cb: () => any | void): void
+}
+
+interface TearDownHook {
+    (cb: (state: any) => void): void
+}
+
 declare global {
     var assert: Chai.AssertStatic
-    var suite: Function
-    var test: Function
-    var setUp: Function
-    var tearDown: Function
+    var suite: SuiteFunction
+    var test: TestFunction
+    var setUp: SetUpHook
+    var tearDown: TearDownHook
 }
 
 export const readConfig = async (): Promise<TestLoaderConfig> => {
