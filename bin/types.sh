@@ -29,7 +29,7 @@ cat types/index.d.ts >> "$TARGET/index.d.ts"
 
 cd "$TEMP"
 
-git clone "$REPOSITORY" --sparse --filter=blob:none --depth=1
+git clone "https://github.com/$REPOSITORY" --sparse --filter=blob:none --depth=1
 
 cd DefinitelyTyped
 
