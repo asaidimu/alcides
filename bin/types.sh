@@ -26,11 +26,11 @@ EOF
 
 cat types/index.d.ts >> "$TARGET/index.d.ts"
 
-pushd "$TEMP"
+cd "$TEMP"
 
 gh repo clone "$REPOSITORY" -- --sparse --filter=blob:none --depth=1
 
-pushd DefinitelyTyped
+cd DefinitelyTyped
 
 git sparse-checkout add types/chai #types/alcides
 
