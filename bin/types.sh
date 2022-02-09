@@ -38,16 +38,9 @@ git sparse-checkout add types/chai #types/alcides
 
 mv ../types/alcides types/alcides
 
-ls types
-
 yarn
-
 yarn prettier --write types/alcides/**/*.ts
-
 yarn lint alcides
-
-echo "testing ..."
-yarn test
 
 git add .
 git commit -m "chore: Updated types for alcides to v$FULL_VERSION" --allow-empty
