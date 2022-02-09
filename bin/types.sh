@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 set -eu
 
-TEMP=`mktemp -d`
+TEMP=$(mktemp -d)
 TARGET="$TEMP/types/alcides"
 REPOSITORY="asaidimu/DefinitelyTyped"
 
@@ -9,12 +9,13 @@ FULL_VERSION=$(
     curl -sH "Accept: application/vnd.github.v3+json" \
               https://api.github.com/repos/asaidimu/alcides/tags?per_page=1 \
     | grep -E "name.+,"\
-    | sed -E 's/("|v|,)//g; s/^.*://g;'
+    | sed -E 's/("|v|,)//g; s/^.*://g; s/^\s//g'
 )
+
 VERSION=$(echo "$FULL_VERSION" | sed -E "s/([0-9]\.[0-9]).*/\1/g;")
 
 mkdir "$TARGET" -p
-cp types/* $TARGET && rm $TARGET/index.d.ts
+cp types/* "$TARGET" && rm "$TARGET/index.d.ts"
 
 cat > "$TARGET/index.d.ts" <<EOF
 // Type definitions for alcides $VERSION
@@ -43,9 +44,14 @@ yarn
 yarn prettier --write types/alcides/**/*.ts
 yarn lint alcides
 
-git add --sparse .
-git commit -m "chore: Updated types for alcides to v$FULL_VERSION" --allow-empty
 
-git remote set-url origin "https://ausaidimu:${INPUT_GIT_TOKEN}@github.com/$REPOSITORY"
+if ! git status | ag "nothing to commit, working tree clean" > /dev/null
+then
+  git add --sparse .
 
-git push -u origin master
+  git commit -m "chore: Update types for alcides to v$FULL_VERSION" --allow-empty
+
+  git remote set-url origin "https://ausaidimu:${INPUT_GIT_TOKEN}@github.com/$REPOSITORY"
+
+  git push -u origin master
+fi
