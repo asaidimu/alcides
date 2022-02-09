@@ -44,9 +44,9 @@ yarn
 yarn prettier --write types/alcides/**/*.ts
 yarn lint alcides
 
-
-if ! git status | ag "nothing to commit, working tree clean" > /dev/null
+if ! git status | grep "nothing to commit, working tree clean" > /dev/null
 then
+  echo "  Pushing to DefinitelyTyped!"
   git add --sparse .
 
   git commit -m "chore: Update types for alcides to v$FULL_VERSION" --allow-empty
@@ -54,4 +54,6 @@ then
   git remote set-url origin "https://ausaidimu:${INPUT_GIT_TOKEN}@github.com/$REPOSITORY"
 
   git push -u origin master
+else
+  echo "  No changes in types."
 fi
