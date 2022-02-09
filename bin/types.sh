@@ -46,6 +46,6 @@ yarn lint alcides
 yarn test
 
 git add .
-git commit -m "chore: Updated types for alcides to v$FULL_VERSION"
+git commit -m "chore: Updated types for alcides to v$FULL_VERSION" --allow-empty
 
 gh repo sync "$REPOSITORY"

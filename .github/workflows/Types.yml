@@ -23,4 +23,6 @@ jobs:
             - name: Install dependencies
               run: npm run ci
             - name: Build and Merge
+              with:
+                  gh_token: ${{ secrets.GITHUB_TOKEN }}
               run: npm run build:types
