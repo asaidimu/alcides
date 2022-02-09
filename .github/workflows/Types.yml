@@ -9,7 +9,7 @@ on:
 
 jobs:
     release:
-        name: Release
+        name: Release Types
         runs-on: ubuntu-latest
         steps:
             - name: Checkout
@@ -22,10 +22,5 @@ jobs:
                   node-version: 'lts/*'
             - name: Install dependencies
               run: npm run ci
-            - name: Build
-              run: npm run build:dist
-            - name: Release
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-              run: npx semantic-release
+            - name: Build and Merge
+              run: npm run build:types
