@@ -1,0 +1,11 @@
+name: typed
+description: Merge type definitions to definitely typed.
+
+inputs:
+    gh_token:
+        description: 'Authentication for gh'
+        required: true
+
+runs:
+    using: docker
+    image: Dockerfile
