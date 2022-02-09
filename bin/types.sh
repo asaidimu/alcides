@@ -38,11 +38,15 @@ git sparse-checkout add types/chai #types/alcides
 
 mv ../types/alcides types/alcides
 
+ls types
+
 yarn
 
-yarn prettier -- --write types/alcides/**/*.ts
+yarn prettier --write types/alcides/**/*.ts
 
 yarn lint alcides
+
+echo "testing ..."
 yarn test
 
 git add .
