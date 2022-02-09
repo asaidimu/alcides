@@ -5,6 +5,9 @@ inputs:
     gh_token:
         description: 'Authentication for gh'
         required: true
+    git_token:
+        description: 'Authentication for git'
+        required: true
 
 runs:
     using: docker

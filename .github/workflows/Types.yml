@@ -21,6 +21,7 @@ jobs:
               uses: ./.github/actions/typed
               with:
                   gh_token: ${{ secrets.GITHUB_TOKEN }}
+                  git_token: ${{ secrets.GIT_TOKEN }}
 #           - name: Setup Node.js
 #             uses: actions/setup-node@v2
 #             with:
