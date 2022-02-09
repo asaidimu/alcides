@@ -46,4 +46,4 @@ yarn lint alcides
 git add --sparse .
 git commit -m "chore: Updated types for alcides to v$FULL_VERSION" --allow-empty
 
-gh repo sync "$REPOSITORY"
+git push -u origin master
