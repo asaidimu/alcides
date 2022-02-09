@@ -42,7 +42,7 @@ yarn
 yarn prettier --write types/alcides/**/*.ts
 yarn lint alcides
 
-git add .
+git add . --sparse
 git commit -m "chore: Updated types for alcides to v$FULL_VERSION" --allow-empty
 
 gh repo sync "$REPOSITORY"
