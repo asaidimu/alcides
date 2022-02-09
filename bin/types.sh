@@ -29,7 +29,7 @@ cat types/index.d.ts >> "$TARGET/index.d.ts"
 
 cd "$TEMP"
 
-gh repo clone "$REPOSITORY" -- --sparse --filter=blob:none --depth=1
+git clone "$REPOSITORY" --sparse --filter=blob:none --depth=1
 
 cd DefinitelyTyped
 
@@ -46,4 +46,6 @@ yarn lint alcides
 git add --sparse .
 git commit -m "chore: Updated types for alcides to v$FULL_VERSION" --allow-empty
 
-echo "asaidimu\n${INPUT_GIT_TOKEN}" | git push -u origin master
+git remote set-url origin "https://ausaidimu:${INPUT_GIT_TOKEN}@github.com/$REPOSITORY"
+
+git push -u origin master
