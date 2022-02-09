@@ -32,7 +32,7 @@ gh repo clone "$REPOSITORY" -- --sparse --filter=blob:none --depth=1
 
 cd DefinitelyTyped
 
-git sparse-checkout add types/chai #types/alcides
+git sparse-checkout add types/alcides types/chai
 
 [ -e "types/alcides" ] && rm -rf "types/alcides"
 
