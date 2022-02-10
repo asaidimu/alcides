@@ -107,4 +107,5 @@ dist/tsconfig.tsbuildinfo
 dist/tests/**/*
 dist/**/*
 .project
-tmp
+resources
+resources/**/*
