@@ -62,6 +62,10 @@ export const EVENT_TEST_RUN_TIMEOUT = Symbol.for('TestCaseRunTimedOut Event')
 
 export const ALCIDES = Symbol.for('ALCIDES')
 
+export const ERR_TEST_RUN_TIMEOUT = 'TestRunTimedOut'
+export const ERR_INVALID_ACTION = 'InvalidAction'
+export const ERR_UNKNOWN_SYMBOL = 'UnknownSymbol'
+
 /**
  * @function getSymbolName
  * @param { symbol } symbol
@@ -71,14 +75,17 @@ export const ALCIDES = Symbol.for('ALCIDES')
 export const getSymbolName = (symbol: symbol | string): string => {
     const symbols: any = {
         [ALCIDES]: 'ALCIDES',
-        [SETUP_HOOK]: 'SetUp Hook',
-        [TEARDOWN_HOOK]: 'TearDown Hook',
-        [EVENT_SUITE_HOOKS_FAILED]: 'TestSuite Hooks Failed Event',
-        [EVENT_SUITE_RUN_DONE]: 'TestSuite Run Done Event',
+        [ERR_INVALID_ACTION]: 'InvalidAction',
+        [ERR_TEST_RUN_TIMEOUT]: 'TestRunTimedOut',
+        [ERR_UNKNOWN_SYMBOL]: 'UnknownSymbol',
         [EVENT_RUNNER_DONE]: 'TestRunner Done Event',
+        [EVENT_SUITE_HOOKS_FAILED]: 'TestSuite Hooks Failed Event',
         [EVENT_SUITE_RUN_COMPLETE]: 'TestSuite Run Completed Event',
+        [EVENT_SUITE_RUN_DONE]: 'TestSuite Run Done Event',
         [EVENT_TEST_RUN_COMPLETE]: 'TestCase Run Complete Event',
         [EVENT_TEST_RUN_TIMEOUT]: 'TestCase Run TimedOut Event',
+        [SETUP_HOOK]: 'SetUp Hook',
+        [TEARDOWN_HOOK]: 'TearDown Hook',
     }
 
     const proxy = new Proxy(symbols, {

@@ -2,6 +2,30 @@ import TestCase, { TestFunction } from '../src/TestCase.js'
 import { invalidActionError } from './Errors.js'
 import { getSymbolName, SETUP_HOOK, TEARDOWN_HOOK } from './Symbols.js'
 
+export interface SuiteFunction {
+    (description: string, cb: () => void): void
+}
+
+export interface TestFunctionHook {
+    (description: string, cb: TestFunction): void
+}
+
+export interface SetUpHook {
+    (cb: TestHook): void
+}
+
+export interface TearDownHook {
+    (cb: TestHook): void
+}
+
+export interface TestSuiteCollector {
+    suite: SuiteFunction
+    test: TestFunctionHook
+    setUp: SetUpHook
+    tearDown: TearDownHook
+    getTestSuites: { (): Array<TestSuite> }
+}
+
 /**
  * Defines a collection of test suites related by fixtures
  *
@@ -9,11 +33,13 @@ import { getSymbolName, SETUP_HOOK, TEARDOWN_HOOK } from './Symbols.js'
  * @namespace TestSuite
  * @memberof TestSuite
  */
-export type TestSuite = {
+export interface TestSuite {
     /**
      * The description of the testCase. Use as a unique id.
      */
     description: string
+
+    parent?: string
 
     /**
      * Array containing TestCases
@@ -49,19 +75,20 @@ export interface TestSuiteCreator {
     /**
      * Adds a test case to the test suite
      */
-    addTestCase: (description: string, testFunction: TestFunction) => void
+    addTest: (description: string, testFunction: TestFunction) => void
+
     /**
-     * Adds a setUp callback to the suite. Should be callable only once.
+     * Adds a testHook callback to the suite. Should be callable only once for
+     * each hook.
      */
-    addSetUp: (fn: Function) => void
-    /**
-     * Adds a tearDown callback to the suite. Should be callable only once.
-     */
-    addTearDown: (fn: Function) => void
+    addHook: (id: symbol | string, fun: TestHook) => void
+
     /**
      * Returns test suite data.
      */
     getTestSuite: () => TestSuite
+
+    description: string
 }
 
 /**
@@ -70,7 +97,7 @@ export interface TestSuiteCreator {
  * @name FixtureFunction
  * @memberof TestSuite
  */
-export type TestHook = {
+export interface TestHook {
     /**
      * The function
      */
@@ -90,53 +117,45 @@ export type TestHook = {
  * @param { string } description - the description of the testSuite
  * @memberof TestSuite
  */
-const initTestSuiteCreator = (description: string): TestSuiteCreator => {
+export const initTestSuite = (
+    description: string,
+    parent?: string
+): TestSuiteCreator => {
     const tests: TestCase[] = []
 
-    const hooks: { [key: string]: TestHook } = {
-        setUp: function () {},
-        tearDown: function () {},
-    }
-
-    const addHook = (id: symbol | string, name: string, fun: TestHook) => {
-        if (hooks[name].id === id) {
-            throw invalidActionError(getSymbolName(id))
-        }
-
-        fun.id = id
-        hooks[name] = fun
-    }
+    const hooks: { [key: string | symbol]: TestHook } = {}
 
     return {
         getTestSuite(): TestSuite {
+            const setUp = hooks[SETUP_HOOK] || (() => {})
+            const tearDown = hooks[TEARDOWN_HOOK] || (() => {})
+
             return {
                 description,
+                parent,
                 tests,
-                setUp: hooks['setUp'],
-                tearDown: hooks['tearDown'],
+                setUp,
+                tearDown,
             }
         },
-        addTestCase(description: string, testFunction: TestFunction) {
+        addHook(id: symbol | string, fun: TestHook) {
+            if (hooks[id]) {
+                throw invalidActionError(getSymbolName(id))
+            }
+
+            fun.id = id
+            hooks[id] = fun
+        },
+        addTest(description: string, testFunction: TestFunction) {
             tests.push({
                 description,
                 testFunction,
             })
         },
-        addSetUp(fn: Function) {
-            addHook(SETUP_HOOK, 'setUp', <TestHook>fn)
-        },
-        addTearDown(fn: Function) {
-            addHook(TEARDOWN_HOOK, 'tearDown', <TestHook>fn)
+        get description() {
+            return description
         },
     }
-}
-
-export interface TestSuiteCollector {
-    suite: Function
-    test: Function
-    setUp: Function
-    tearDown: Function
-    getTestSuites: Function
 }
 
 export const createTestSuiteCollector = (): TestSuiteCollector => {
@@ -146,10 +165,13 @@ export const createTestSuiteCollector = (): TestSuiteCollector => {
 
     return {
         suite(description: string, fn: Function) {
+            let parent
+
             if (current !== null) {
+                parent = current.description
                 stack.push(current)
             }
-            current = initTestSuiteCreator(description)
+            current = initTestSuite(description, parent)
 
             fn()
 
@@ -166,19 +188,20 @@ export const createTestSuiteCollector = (): TestSuiteCollector => {
             if (current === null) {
                 throw invalidActionError('test()')
             }
-            current.addTestCase(description, testFunction)
+            current.addTest(description, testFunction)
         },
-        tearDown(fn: Function) {
+        tearDown(fn: TestHook) {
             if (current === null) {
                 throw invalidActionError('tearDown()')
             }
-            current.addTearDown(fn)
+            current.addHook(TEARDOWN_HOOK, fn)
         },
-        setUp(fn: Function) {
+        setUp(fn: TestHook) {
             if (current === null) {
                 throw invalidActionError('setUp()')
             }
-            current.addSetUp(fn)
+
+            current.addHook(SETUP_HOOK, fn)
         },
         getTestSuites(): Array<TestSuite> {
             const suites = all.reduce(
@@ -193,5 +216,5 @@ export const createTestSuiteCollector = (): TestSuiteCollector => {
         },
     }
 }
-/** @see initTestSuiteCreator */
-export default initTestSuiteCreator
+/** @see initTestSuite */
+export default initTestSuite

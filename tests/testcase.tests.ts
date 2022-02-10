@@ -1,151 +1,156 @@
-import { EVENT_RUNNER_DONE } from '../src/Symbols.js'
-import TestCase from '../src/TestCase.js'
-import TestCaseRunner, { TestResult } from '../src/TestCaseRunner.js'
-import {
-    createTestSuiteCollector,
-    TestSuiteCollector,
-} from '../src/TestSuite.js'
-import TestSuiteRunner, { TestSuiteResults } from '../src/TestSuiteRunner.js'
+import { ERR_TEST_RUN_TIMEOUT } from '../src/Symbols.js'
+import TestCaseRunner, {
+    TestFixture,
+    TestResult,
+} from '../src/TestCaseRunner.js'
 
 suite('Alcides TestCase', () => {
-    test('Run a test case.', async () => {
+    interface State {
+        runner: TestCaseRunner
+        createTest: (opts: any) => TestFixture
+    }
+
+    setUp(
+        (): State => ({
+            createTest({
+                setUp = false,
+                tearDown = false,
+                testFunction = false,
+            } = {}) {
+                return {
+                    description: 'Random Test',
+                    setUp: setUp ? setUp : () => {},
+                    tearDown: tearDown ? tearDown : () => {},
+                    testFunction: testFunction ? testFunction : () => {},
+                }
+            },
+            runner: new TestCaseRunner(),
+        })
+    )
+
+    test('Run a test case.', async ({ runner, createTest }: State) => {
         const state: number[] = []
 
-        const testCase: TestCase = {
-            description: 'Assert true is true.',
-            testFunction: () => {
-                state.push(1)
-            },
-        }
-
-        const runner = new TestCaseRunner()
-
-        const result: TestResult = await runner.run({
-            description: '',
-            testFunction: testCase.testFunction,
-            setUp: () => {},
-            tearDown: () => {},
-        })
+        const result: TestResult = await runner.run(
+            createTest({
+                testFunction: () => {
+                    state.push(1)
+                },
+            })
+        )
 
         assert.deepEqual(state, [1])
         assert.isNull(result.error)
     })
 
-    test('Catch a failing test case.', async () => {
+    test('Catch a failing test case.', async ({
+        runner,
+        createTest,
+    }: State) => {
         const err_msg = 'Failing Test.'
 
-        const runner = new TestCaseRunner()
-
-        const { error }: TestResult = await runner.run({
-            description: '',
-            testFunction: () => {
-                throw new Error(err_msg)
-            },
-            setUp: () => {},
-            tearDown: () => {},
-        })
+        const { error }: TestResult = await runner.run(
+            createTest({
+                testFunction: () => {
+                    throw new Error(err_msg)
+                },
+            })
+        )
 
         assert.deepEqual(error?.message, err_msg)
     })
 
-    test('Pass state from setUp down.', async () => {
-        const { getTestSuites, suite, test, setUp }: TestSuiteCollector =
-            createTestSuiteCollector()
-
-        const message = 'This is not an error.'
-        const id = '12345'
-
-        suite('A', () => {
-            setUp(() => {
-                //returned object will be passed down to each testCase
-                return { message }
-            })
-
-            test(id, async ({ message }: any) => {
-                //We throw the message so that we can catch it and verify the
-                //message.
-                throw new Error(message)
-            })
-        })
-
-        const runner = new TestSuiteRunner(new TestCaseRunner())
-        runner.add(getTestSuites())
-
-        const suiteResults: Array<TestSuiteResults> = await new Promise(
-            (resolve) => {
-                runner.on(EVENT_RUNNER_DONE, resolve)
-                runner.run()
-            }
-        )
-
-        const { results } = suiteResults[0]
-        const { error } = results[id]
-
-        //verify thrown error contains message from setUp
-        assert.deepEqual(error!.message, message)
-    })
-
-    test('Fail long running tests.', async () => {
-        const { getTestSuites, suite, test }: TestSuiteCollector =
-            createTestSuiteCollector()
-
-        const id = '12345'
-
-        suite('A', () => {
-            test(id, async () => {
-                const result = await new Promise((resolve) => {
-                    setTimeout(() => {
-                        resolve(true)
-                    }, 100)
-                })
-                assert.isTrue(result)
-            })
-        })
-
-        const runner = new TestSuiteRunner(
-            new TestCaseRunner({
-                timeout: 50,
+    test('Run tests asynchronously.', async ({ runner, createTest }: State) => {
+        const { error }: TestResult = await runner.run(
+            createTest({
+                testFunction: async () => {
+                    const result = await new Promise((resolve) => {
+                        setTimeout(() => {
+                            resolve(true)
+                        }, 10)
+                    })
+                    assert.isFalse(result)
+                },
             })
         )
 
-        runner.add(getTestSuites())
-
-        const suiteResults: Array<TestSuiteResults> = await new Promise(
-            (resolve) => {
-                runner.on(EVENT_RUNNER_DONE, resolve)
-                runner.run()
-            }
-        )
-
-        const { results } = suiteResults[0]
-        const { error } = results[id]
         assert.isNotNull(error)
     })
 
-    test('Test runs are timed.', async () => {
-        const { getTestSuites, suite, test }: TestSuiteCollector =
-            createTestSuiteCollector()
-
-        const id = 'Example'
+    test('Test runs are timed.', async ({ runner, createTest }: State) => {
         const waitTime = 50
 
-        suite(id, () => {
-            test(id, async () => {
+        const test = createTest({
+            testFunction: async () => {
                 await new Promise((resolve) => setTimeout(resolve, waitTime))
-            })
+            },
         })
 
-        const runner = new TestSuiteRunner(new TestCaseRunner())
-        runner.add(getTestSuites())
-        const suiteResults: Array<TestSuiteResults> = await new Promise(
-            (resolve) => {
-                runner.on(EVENT_RUNNER_DONE, resolve)
-                runner.run()
-            }
+        const { duration }: TestResult = await runner.run(test)
+
+        // could be at least 2ms late or early
+        assert.isTrue(duration < waitTime + 2 || duration > waitTime - 2)
+    })
+
+    test('Fail long running tests.', async ({ createTest }: State) => {
+        const runner = new TestCaseRunner({ timeout: 5 })
+
+        const { error }: TestResult = await runner.run(
+            createTest({
+                testFunction: async () => {
+                    await new Promise((resolve) => {
+                        setTimeout(() => {
+                            resolve(true)
+                        }, 20)
+                    })
+                },
+            })
         )
 
-        const { results } = suiteResults[0]
-        const { duration } = results[id]
-        assert.isAbove(duration + 1, waitTime)
+        assert.deepEqual(error!.code, ERR_TEST_RUN_TIMEOUT)
+    })
+
+    test('Run tests with fixtures.', async ({ runner, createTest }: State) => {
+        const state: number[] = []
+
+        await runner.run(
+            createTest({
+                setUp: () => {
+                    state.push(1)
+                },
+                testFunction: () => {
+                    state.push(2)
+                },
+                tearDown: () => {
+                    state.push(3)
+                },
+            })
+        )
+
+        assert.deepEqual(state, [1, 2, 3])
+    })
+
+    test('Pass state from setUp down.', async ({
+        createTest,
+        runner,
+    }: State) => {
+        const message = 'This is not an error.'
+
+        const { error } = await runner.run(
+            createTest({
+                setUp: () => {
+                    return { message }
+                },
+                tearDown: (state: any) => {
+                    delete state.message
+                },
+                testFunction: async ({ message }: any) => {
+                    throw new Error(message)
+                },
+            })
+        )
+
+        //verify thrown error contains message from setUp
+        assert.deepEqual(error!.message, message)
     })
 })

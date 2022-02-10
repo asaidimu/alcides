@@ -19,8 +19,8 @@
 
 -   [x] Pass state from setUp to tests.
 -   [x] Run asynchronous tests.
--   [x] Run tests in parallel.
 -   [x] Kill and Report long running tests.
+-   [ ] Run tests in parallel.
 
 ## Milestone 4
 

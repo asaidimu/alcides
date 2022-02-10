@@ -11,7 +11,7 @@ export interface TestCase {
      *
      * @name description
      */
-    description: string | symbol
+    description: string
 
     /**
      * The test function that will run for this test case.

@@ -1,7 +1,10 @@
-import { EventEmitter } from 'stream'
 import { timeoutError } from './Errors.js'
-import { EVENT_TEST_RUN_COMPLETE, EVENT_TEST_RUN_TIMEOUT } from './Symbols.js'
+import { EVENT_TEST_RUN_TIMEOUT } from './Symbols.js'
 import { TestFunction, TestCase } from './TestCase.js'
+
+interface CodedError extends Error {
+    code?: string | symbol
+}
 
 /**
  * Results returned for each tes case that is run.
@@ -15,13 +18,14 @@ export type TestResult = {
      * null.
      * @name error
      */
-    error: Error | null
+    error: CodedError | null
 
     /**
      * Time it took the test to run
      * @name duration
      */
     duration: number
+    description: string
 }
 
 /**
@@ -97,7 +101,7 @@ export class TestCaseRunner implements TestCaseRunnerInterface {
         this.configs = config
     }
 
-    async run(test: TestFixture, events?: EventEmitter): Promise<TestResult> {
+    async run(test: TestFixture): Promise<TestResult> {
         let error: Error | null = null
 
         const state = await test.setUp()
@@ -110,19 +114,10 @@ export class TestCaseRunner implements TestCaseRunnerInterface {
             error = e instanceof Error ? e : new Error(e)
         } finally {
             duration = performance.now() - duration
-            test.tearDown()
+            test.tearDown(state)
         }
 
-        const result = { duration, error }
-
-        if (events) {
-            events.emit(EVENT_TEST_RUN_COMPLETE, {
-                description: test.description,
-                result,
-            })
-        }
-
-        return result
+        return { description: test.description, duration, error }
     }
 
     private async runTestFunction(test: TestFixture, state: any) {

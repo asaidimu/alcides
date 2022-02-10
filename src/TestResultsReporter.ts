@@ -1,6 +1,7 @@
 import { TestSuiteResults } from './TestSuiteRunner.js'
 import chalk from 'chalk'
 import { getSymbolName } from './Symbols.js'
+import { TestResult } from './TestCaseRunner.js'
 
 /* const formatErrorLocation = (str: string) => {
     let result = '';
@@ -42,17 +43,10 @@ const printErrors = ({
     description,
     errors,
 }: TestSuiteResults): void => {
-    const failed: any = Object.entries(results).reduce(
-        (all: any, curr: any) => {
-            if (curr[1].error !== null)
-                all.push([
-                    curr[0], // description
-                    curr[1].error, // error
-                ])
-            return all
-        },
-        []
-    )
+    const failed: any = results.reduce((all: any, curr: TestResult, _) => {
+        if (curr.error !== null) all.push([curr.description, curr.error])
+        return all
+    }, [])
 
     const suiteErrorSymbols = Object.keys(errors)
 
@@ -75,9 +69,9 @@ const printSuiteResults = ({
 }: TestSuiteResults): void => {
     const indentation = new Array(2).fill(' ').join('')
 
-    const { passed, failed }: any = Object.entries(results).reduce(
+    const { passed, failed }: any = results.reduce(
         (all: any, curr: any) => {
-            if (curr[1].error === null) all.passed.push(curr)
+            if (curr.error === null) all.passed.push(curr)
             else all.failed.push(curr)
             return all
         },
@@ -85,12 +79,14 @@ const printSuiteResults = ({
     )
 
     const getLogger = (passed: boolean = true) => {
-        return ([key, value]: any) => {
+        return (value: any) => {
             const duration = chalk.grey(
                 `(${Number(value.duration).toFixed(2)} ms)`
             )
             const status = passed ? chalk.green('') : chalk.red(``)
-            const message = passed ? chalk.grey(key) : chalk.red(key)
+            const message = passed
+                ? chalk.grey(value.description)
+                : chalk.red(value.description)
 
             console.log(`${indentation}   ${status} ${message} ${duration}`)
         }
@@ -113,7 +109,7 @@ const printSummary = (suiteResults: Array<TestSuiteResults>) => {
         count: number
     }
 
-    const reduceTestResults = (all: Summary, value: any) => {
+    const reduceTestResults = (all: Summary, value: TestResult) => {
         all.count += 1
         if (value.error === null) all.passed += 1
         else all.failed += 1
@@ -123,7 +119,7 @@ const printSummary = (suiteResults: Array<TestSuiteResults>) => {
 
     const reduceSuiteResults = (all: Summary, value: TestSuiteResults) => {
         const { results } = value
-        return Object.values(results).reduce(reduceTestResults, all)
+        return results.reduce(reduceTestResults, all)
     }
 
     const { count, passed, failed }: Summary = suiteResults.reduce(

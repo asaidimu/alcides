@@ -1,8 +1,10 @@
 import chalk from 'chalk'
+import {
+    ERR_INVALID_ACTION,
+    ERR_TEST_RUN_TIMEOUT,
+    ERR_UNKNOWN_SYMBOL,
+} from './Symbols.js'
 
-export const ERR_TEST_RUN_TIMEOUT = Symbol.for('TestRunTimedOut')
-export const ERR_INVALID_ACTION = Symbol.for('InvalidAction')
-export const ERR_UNKNOWN_SYMBOL = Symbol.for('UnknownSymbol')
 export const timeoutError = (description: string | symbol) => {
     const error: any = new Error(`TestCase '${String(description)}' timed out.`)
     error.code = ERR_TEST_RUN_TIMEOUT
