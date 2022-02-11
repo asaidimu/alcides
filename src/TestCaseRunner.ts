@@ -2,6 +2,8 @@ import { timeoutError } from './Errors.js'
 import { EVENT_TEST_RUN_TIMEOUT } from './Symbols.js'
 import { TestFunction, TestCase } from './TestCase.js'
 
+import { setTimeout } from 'timers/promises'
+
 interface CodedError extends Error {
     code?: string | symbol
 }
@@ -106,33 +108,32 @@ export class TestCaseRunner implements TestCaseRunnerInterface {
 
         const state = await test.setUp()
 
-        let duration = performance.now()
+        const ac = new AbortController()
 
+        const { timeout } = this.configs
+
+        let duration = performance.now()
         try {
-            await this.runTestFunction(test, state)
+            const result = await Promise.race([
+                test.testFunction(state),
+                setTimeout(timeout, EVENT_TEST_RUN_TIMEOUT, {
+                    signal: ac.signal,
+                    ref: false,
+                }),
+            ])
+
+            if (result == EVENT_TEST_RUN_TIMEOUT) {
+                throw timeoutError(test.description)
+            }
         } catch (e: any) {
             error = e instanceof Error ? e : new Error(e)
         } finally {
             duration = performance.now() - duration
+            ac.abort()
             test.tearDown(state)
         }
 
         return { description: test.description, duration, error }
-    }
-
-    private async runTestFunction(test: TestFixture, state: any) {
-        const { timeout } = this.configs
-
-        const result = await Promise.race([
-            test.testFunction(state),
-            new Promise((reject) => {
-                setTimeout(() => reject(EVENT_TEST_RUN_TIMEOUT), timeout)
-            }),
-        ])
-
-        if (result === EVENT_TEST_RUN_TIMEOUT) {
-            throw timeoutError(test.description)
-        }
     }
 
     get config(): TestCaseRunnerConfig {

@@ -47,7 +47,7 @@ export const checkFixtures = async (
     return errors
 }
 
-const runSuite = async (
+export const runSuite = async (
     suite: TestSuite,
     runner: TestCaseRunnerInterface
 ): Promise<TestSuiteResults> => {
