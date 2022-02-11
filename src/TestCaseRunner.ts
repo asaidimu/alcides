@@ -8,86 +8,26 @@ interface CodedError extends Error {
     code?: string | symbol
 }
 
-/**
- * Results returned for each tes case that is run.
- * @typedef TestCaseResult
- * @name TestCaseResult
- * @memberof TestCase
- */
 export type TestResult = {
-    /**
-     * If the test failed, contains the error that was thrown. Otherwise is
-     * null.
-     * @name error
-     */
     error: CodedError | null
 
-    /**
-     * Time it took the test to run
-     * @name duration
-     */
     duration: number
     description: string
 }
 
-/**
- * Callbacks that represent a complete text fixture.
- * @typedef TestCaseFixture
- * @name TestCaseFixture
- * @memberof TestCaseRunner
- */
 export interface TestFixture extends TestCase {
-    /**
-     * Run once before the testFunction to set up the environment.
-     * @name setUp
-     * @function
-     * @param void
-     * @returns void
-     */
     setUp: Function
 
-    /**
-     * Run upon the completion or failure of the testFunction. Resets the environment.
-     *
-     * @name tearDown
-     * @function
-     * @param void
-     * @returns void
-     */
     tearDown: Function
 
-    /**
-     * Callback containing test algorithm.
-     * @function
-     * @name testFunction
-     * @param void
-     * @returns void
-     */
     testFunction: TestFunction
 }
 
-/**
- * TestCaseRunnerConfig
- */
 export interface TestCaseRunnerConfig {
-    /**
-     * Timeout before a running test is stopped
-     */
     timeout: number
 }
 
-/**
- * TestCaseRunner
- * @interface
- */
 export interface TestCaseRunnerInterface {
-    /**
-     * Runs a TestCase
-     * @function run
-     * @param { TestFixture } fixtures - a test case environment.
-     * @returns { TestResult } testResult - results of the test run.
-     * @memberof TestCaseRunner
-     */
     run: Function
     config: TestCaseRunnerConfig
 }

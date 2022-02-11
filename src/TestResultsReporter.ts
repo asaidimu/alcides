@@ -3,18 +3,18 @@ import chalk from 'chalk'
 import { getSymbolName } from './Symbols.js'
 import { TestResult } from './TestCaseRunner.js'
 
-/* const formatErrorLocation = (str: string) => {
-    let result = '';
-    if (str.match(process.cwd())) {
-        const info = str
-        .trim()
-        .substring(10)
-        .substring(process.cwd().length + 1)
-        .split(':');
-        result = `@ ${chalk.bold.blue('./' + info[0])} : ${chalk.bold.blue(info[1])}`;
-    }
-    return result;
-}; */
+// const formatErrorLocation = (str: string) => {
+//    let result = '';
+//    if (str.match(process.cwd())) {
+//        const info = str
+//        .trim()
+//        .substring(10)
+//        .substring(process.cwd().length + 1)
+//        .split(':');
+//        result = `@ ${chalk.bold.blue('./' + info[0])} : ${chalk.bold.blue(info[1])}`;
+//    }
+//    return result;
+//};
 
 const getLogger = (prefix: string) => {
     return ([id, error]: any) => {

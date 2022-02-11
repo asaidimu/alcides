@@ -1,25 +1,10 @@
 import { TestResult, TestCaseRunnerInterface } from './TestCaseRunner.js'
 import { TestHook, TestSuite, TestSuiteErrors } from './TestSuite.js'
 
-/**
- * Results for each test suite run.
- *
- * @name TestSuiteResults
- */
 export type TestSuiteResults = {
-    /**
-     * The description of the test suite.
-     */
     description: string
-    /**
-     * A collection of results for each test case in the suite.
-     * @see TestCaseResult
-     */
     results: Array<TestResult>
 
-    /**
-     * Errors that occurred  during the test suite run.
-     */
     errors: TestSuiteErrors
 }
 

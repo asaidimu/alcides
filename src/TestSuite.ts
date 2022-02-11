@@ -26,97 +26,36 @@ export interface TestSuiteCollector {
     getTestSuites: { (): Array<TestSuite> }
 }
 
-/**
- * Defines a collection of test suites related by fixtures
- *
- * @name TestSuite
- * @namespace TestSuite
- * @memberof TestSuite
- */
 export interface TestSuite {
-    /**
-     * The description of the testCase. Use as a unique id.
-     */
     description: string
 
     parent?: string
 
-    /**
-     * Array containing TestCases
-     */
     tests: TestCase[]
 
-    /**
-     * Callback that sets up fixtures. Run once before each testCase.
-     */
     setUp: TestHook
 
-    /**
-     * Callback that clears fixtures. Run once before each testCase.
-     */
     tearDown: TestHook
 }
 
-/**
- * A collection of errors that occurred while the test suite was being run.
- *
- * @name TestSuiteErrors
- * @memberof TestSuite
- */
 export type TestSuiteErrors = { [key: symbol | string]: Error }
 
-/**
- * Exposes methods used to create test suites.
- * @interface
- * @name TestSuiteCreator
- * @memberof TestSuite
- */
 export interface TestSuiteCreator {
-    /**
-     * Adds a test case to the test suite
-     */
     addTest: (description: string, testFunction: TestFunction) => void
 
-    /**
-     * Adds a testHook callback to the suite. Should be callable only once for
-     * each hook.
-     */
     addHook: (id: symbol | string, fun: TestHook) => void
 
-    /**
-     * Returns test suite data.
-     */
     getTestSuite: () => TestSuite
 
     description: string
 }
 
-/**
- * Describes a fixture function
- *
- * @name FixtureFunction
- * @memberof TestSuite
- */
 export interface TestHook {
-    /**
-     * The function
-     */
     (): any
 
-    /**
-     * The id of the function.
-     */
     id?: symbol | string
 }
 
-/**
- * Exposes an implementation of the TestSuiteCreator interface
- *
- * @name initTestSuiteCreator
- * @function initTestSuiteCreator
- * @param { string } description - the description of the testSuite
- * @memberof TestSuite
- */
 export const initTestSuite = (
     description: string,
     parent?: string
@@ -216,5 +155,4 @@ export const createTestSuiteCollector = (): TestSuiteCollector => {
         },
     }
 }
-/** @see initTestSuite */
 export default initTestSuite
