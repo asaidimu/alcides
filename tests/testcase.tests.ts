@@ -1,4 +1,4 @@
-import { ERR_TEST_RUN_TIMEOUT } from '../src/Symbols.js'
+import { ERR_TEST_RUN_TIMEOUT } from '../src/Constants.js'
 import TestCaseRunner, {
     TestFixture,
     TestResult,

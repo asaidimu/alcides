@@ -14,7 +14,7 @@
         "clean": "rm -rf dist",
         "prebuild": "yarn clean",
         "build": "yarn tsc",
-        "test": "yarn --silent --offline alcides",
+        "test": "yarn --silent --offline node ./dist/index.js",
         "build:watch": "yarn tsc --watch",
         "build:docs": "yarn jsdoc -c jsdoc.json",
         "build:docs:watch": "nodemon --exec 'yarn build:docs' --watch src -q",
@@ -22,8 +22,7 @@
         "pretest:ci": "yarn build",
         "test:ci": "yarn test",
         "build:dist": "./bin/dist.sh",
-        "build:types": "./bin/types.sh",
-        "postversion": "cp -r package.json ../dist.package.json"
+        "build:types": "./bin/types.sh"
     },
     "devDependencies": {
         "@semantic-release/changelog": "^6.0.1",
@@ -77,11 +76,5 @@
     "dependencies": {
         "chalk": "^5.0.0",
         "workerpool": "^6.2.0"
-    },
-    "tests": {
-        "include": [
-            "dist/tests"
-        ],
-        "timeout": 2000
     }
 }

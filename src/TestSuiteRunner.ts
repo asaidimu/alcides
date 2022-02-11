@@ -1,5 +1,7 @@
 import { TestResult, TestCaseRunnerInterface } from './TestCaseRunner.js'
-import { TestHook, TestSuite, TestSuiteErrors } from './TestSuite.js'
+import { TestSuite, TestSuiteErrors } from './TestSuite.js'
+
+import { TestHook } from './TestCase.js'
 
 export type TestSuiteResults = {
     description: string

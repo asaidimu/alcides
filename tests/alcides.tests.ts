@@ -1,4 +1,4 @@
-import { ALCIDES, getSymbolName } from '../src/Symbols.js'
+import { ALCIDES, getSymbolName } from '../src/Constants.js'
 
 suite('Alcides', () => {
     test('Can get SymbolName', () => {

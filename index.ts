@@ -7,9 +7,7 @@ import { Config, readConfig } from './src/Config.js'
 const main = async () => {
     const config: Config = await readConfig()
     const runner = new TestRunner(config)
-
     const reporter = new TestResultsReporter()
-
     await reporter.report(await runner.run())
 }
 

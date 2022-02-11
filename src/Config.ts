@@ -1,5 +1,7 @@
+import { createRequire } from 'module'
+import { access } from 'fs/promises'
+import { constants } from 'fs'
 import path from 'path'
-import { readFile } from 'fs/promises'
 
 export interface Config {
     include: string | Array<string>
@@ -8,19 +10,54 @@ export interface Config {
     parallel: boolean
 }
 
+const require = createRequire(process.cwd())
+
+export const getConfigFile = async (): Promise<string | void> => {
+    const paths: Array<string> = [
+        'alcides.json',
+        '.alcidesrc',
+        '.alcides.json',
+        'package.json',
+    ]
+
+    try {
+        const file = await Promise.any(
+            paths
+                .map((base) => path.format({ dir: process.cwd(), base }))
+                .map(async (entry) => {
+                    await access(entry, constants.R_OK)
+                    return Promise.resolve(entry)
+                })
+        )
+        return file
+    } catch {}
+}
+
 export const readConfig = async (): Promise<Config> => {
-    const package_json = path.format({
-        dir: process.cwd(),
-        base: 'package.json',
-    })
-    const json = await readFile(package_json, { encoding: 'utf8' })
+    const file = await getConfigFile()
 
-    const { include, workers, timeout, parallel } = JSON.parse(json).tests
-
-    return {
-        include: include ? include : 'tests',
-        workers: workers ? workers : 2,
-        timeout: timeout ? timeout : 1000,
-        parallel: parallel ? parallel : false,
+    const config: Config = {
+        include: 'tests',
+        workers: 2,
+        timeout: 1000,
+        parallel: false,
     }
+
+    if (file) {
+        let data = require(file)
+
+        if (file.match(/package\.json/)) {
+            if (data.alcides) {
+                data = data.alcides
+            } else if (data.tests) {
+                data = data.tests
+            } else {
+                data = {}
+            }
+        }
+
+        Object.assign(config, data)
+    }
+
+    return config
 }

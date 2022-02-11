@@ -3,22 +3,22 @@ import {
     ERR_INVALID_ACTION,
     ERR_TEST_RUN_TIMEOUT,
     ERR_UNKNOWN_SYMBOL,
-} from './Symbols.js'
+    EXIT_INVALID_CONFIG,
+} from './Constants.js'
 
-export const timeoutError = (description: string | symbol) => {
+export const timeoutError = (description: string) => {
     const error: any = new Error(`TestCase '${String(description)}' timed out.`)
     error.code = ERR_TEST_RUN_TIMEOUT
     return error
 }
-
-export const invalidActionError = (description: string | symbol) => {
+export const invalidActionError = (description: string) => {
     const error: any = new Error(`Invalid call to ${String(description)}`)
     error.code = ERR_INVALID_ACTION
     return error
 }
 
-export const unknownSymbolError = (symbol: symbol) => {
-    const error: any = new Error(`Unknown symbol ${String(symbol)}`)
+export const unknownSymbolError = (symbol: string) => {
+    const error: any = new Error(`Unknown symbol ${symbol}`)
     error.code = ERR_UNKNOWN_SYMBOL
     return error
 }
@@ -35,5 +35,5 @@ export const exitWithInvalidConfigError = (error: any) => {
         console.log('    Please check your configurations.')
         console.log()
     }
-    process.exit(1)
+    process.exit(EXIT_INVALID_CONFIG)
 }

@@ -1,4 +1,4 @@
-import { SETUP_HOOK, TEARDOWN_HOOK } from '../src/Symbols.js'
+import { SETUP_HOOK, TEARDOWN_HOOK } from '../src/Constants.js'
 import TestCaseRunner, {
     TestCaseRunnerInterface,
 } from '../src/TestCaseRunner.js'

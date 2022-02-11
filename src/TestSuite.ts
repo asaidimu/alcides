@@ -1,6 +1,6 @@
-import TestCase, { TestFunction } from '../src/TestCase.js'
+import TestCase, { TestFunction, TestHook } from '../src/TestCase.js'
 import { invalidActionError } from './Errors.js'
-import { getSymbolName, SETUP_HOOK, TEARDOWN_HOOK } from './Symbols.js'
+import { getSymbolName, SETUP_HOOK, TEARDOWN_HOOK } from './Constants.js'
 
 export interface SuiteFunction {
     (description: string, cb: () => void): void
@@ -29,8 +29,6 @@ export interface TestSuiteCollector {
 export interface TestSuite {
     description: string
 
-    parent?: string
-
     tests: TestCase[]
 
     setUp: TestHook
@@ -38,31 +36,22 @@ export interface TestSuite {
     tearDown: TestHook
 }
 
-export type TestSuiteErrors = { [key: symbol | string]: Error }
+export type TestSuiteErrors = { [key: string]: Error }
 
 export interface TestSuiteCreator {
     addTest: (description: string, testFunction: TestFunction) => void
 
-    addHook: (id: symbol | string, fun: TestHook) => void
+    addHook: (id: string, fun: TestHook) => void
 
     getTestSuite: () => TestSuite
 
     description: string
 }
 
-export interface TestHook {
-    (): any
-
-    id?: symbol | string
-}
-
-export const initTestSuite = (
-    description: string,
-    parent?: string
-): TestSuiteCreator => {
+export const initTestSuite = (description: string): TestSuiteCreator => {
     const tests: TestCase[] = []
 
-    const hooks: { [key: string | symbol]: TestHook } = {}
+    const hooks: { [key: string]: TestHook } = {}
 
     return {
         getTestSuite(): TestSuite {
@@ -71,13 +60,12 @@ export const initTestSuite = (
 
             return {
                 description,
-                parent,
                 tests,
                 setUp,
                 tearDown,
             }
         },
-        addHook(id: symbol | string, fun: TestHook) {
+        addHook(id: string, fun: TestHook) {
             if (hooks[id]) {
                 throw invalidActionError(getSymbolName(id))
             }
@@ -104,13 +92,10 @@ export const createTestSuiteCollector = (): TestSuiteCollector => {
 
     return {
         suite(description: string, fn: Function) {
-            let parent
-
             if (current !== null) {
-                parent = current.description
                 stack.push(current)
             }
-            current = initTestSuite(description, parent)
+            current = initTestSuite(description)
 
             fn()
 

@@ -1,6 +1,6 @@
 import { TestSuiteResults } from './TestSuiteRunner.js'
 import chalk from 'chalk'
-import { getSymbolName } from './Symbols.js'
+import { getSymbolName } from './Constants.js'
 import { TestResult } from './TestCaseRunner.js'
 
 // const formatErrorLocation = (str: string) => {
