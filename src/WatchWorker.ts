@@ -21,11 +21,34 @@ const exec = async (
     return run(new TestCaseRunner(config), getTestSuites())
 }
 
+const serializeErrors = (
+    results: Array<TestSuiteResults>
+): Array<TestSuiteResults> => {
+    /* Assertation errors from chai aren't passed very well. */
+    const serialized = results.map((suiteResult) => {
+        const { results } = suiteResult
+
+        suiteResult.results = results.map((result) => {
+            const { error } = result
+            if (error !== null) {
+                result.error = {
+                    stack: error.stack,
+                    name: error.name,
+                    message: error.message,
+                    code: error.code,
+                }
+            }
+            return result
+        })
+        return suiteResult
+    })
+    return serialized
+}
+
 const main = async () => {
     const { config, paths } = workerData
     const results = await exec(config, paths)
-
-    parentPort?.postMessage(results)
+    parentPort?.postMessage(serializeErrors(results))
 }
 
 main()
