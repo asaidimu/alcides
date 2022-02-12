@@ -1,3 +1,11 @@
+## [1.4.1](https://github.com/augustinesaidimu/alcides/compare/v1.4.0...v1.4.1) (2022-02-12)
+
+
+### Bug Fixes
+
+* fix delay bug by clearing timeouts ([83b7feb](https://github.com/augustinesaidimu/alcides/commit/83b7feba121bbe397697be26942f8f10f164d301))
+* serialize errors in Worker ([eda77f5](https://github.com/augustinesaidimu/alcides/commit/eda77f59eaab54c887b1acc06389db22141b2249))
+
 # [1.4.0](https://github.com/augustinesaidimu/alcides/compare/v1.3.1...v1.4.0) (2022-02-09)
 
 
