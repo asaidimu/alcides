@@ -22,10 +22,13 @@ cat > "$TARGET/index.d.ts" <<EOF
 // Project: https://github.com/asaidimu/alcides
 // Definitions by: saidimu <https://github.com/asaidimu>
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
-// TypeScript Version: 3
+// TypeScript Version: 3.0
+
 EOF
 
 cat types/index.d.ts >> "$TARGET/index.d.ts"
+
+[ "$NODE_ENV" = "development" ] && exit
 
 cd "$TEMP"
 
