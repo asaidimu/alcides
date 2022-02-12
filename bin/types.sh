@@ -1,6 +1,8 @@
 #!/usr/bin/env sh
 set -eu
 
+NODE_ENV=${NODE_ENV:-""}
+
 TEMP=$(mktemp -d)
 TARGET="$TEMP/types/alcides"
 REPOSITORY="asaidimu/DefinitelyTyped"
