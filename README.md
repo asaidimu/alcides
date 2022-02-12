@@ -3,8 +3,11 @@
 [![semantic-release: angular](https://img.shields.io/badge/semantic--release-angular-e10079?logo=semantic-release)](https://github.com/semantic-release/semantic-release)
 ![license](https://img.shields.io/github/license/augustinesaidimu/alcides)
 ![tag](https://img.shields.io/github/v/tag/augustinesaidimu/alcides?sort=semver)
-![release](https://img.shields.io/github/workflow/status/augustinesaidimu/alcides/Release)
+![build](https://img.shields.io/github/workflow/status/augustinesaidimu/alcides/Release)
 ![tests](https://img.shields.io/github/workflow/status/augustinesaidimu/alcides/Test?label=tests)
+![chai](https://img.shields.io/npm/dependency-version/alcides/chai)
+![@types/chai](https://img.shields.io/npm/dependency-version/alcides/@types/chai)
+![@types/alcides](https://img.shields.io/npm/dependency-version/alcides/@types/alcides)
 
 ## Re-inventing the wheel.
 
@@ -19,76 +22,88 @@ The allegory of the [Labors of Hercules](https://en.wikipedia.org/wiki/Labours_o
 The names _Heracles_ and _Alcaeus_ were already taken on npm, so ... _Alcides_.
 
 ## License
+
 This project is released under the [MIT](https://choosealicense.com/licenses/mit/) License.
 
 <hr/>
 
 ## Contents
- -  [Installation](#installation)
- -  [Configuration](#configuration)
- -  [Running tests](#running-tests)
- -  [Writing tests](#writing-tests)
- 
- 
+
+-   [Installation](#installation)
+-   [Configuration](#configuration)
+-   [Running tests](#running-tests)
+-   [Writing tests](#writing-tests)
+
 ### Installation
+
 Install with your prefered package manager.
+
 ```
 yarn install -D alcides
 ```
+
 ```
 npm install --save-dev alcides
 ```
 
 ### Configuration
+
 The following options are offered to configure the runner.
+
 ```javascript
 const defaultConfig = {
-   include: 'tests', /* where to look for test files. */
-   timeout: 1000,    /* maximum run time for each test.*/
-   watch: false,     /* determines whether the runner should run once or monitor for changes.*/
-   files: [],         /* a list of files to watch. */
+    include: 'tests' /* where to look for test files. */,
+    timeout: 1000 /* maximum run time for each test.*/,
+    watch: false /* determines whether the runner should run once or monitor for changes.*/,
+    files: [] /* a list of files to watch. */,
 }
 ```
+
 These options can be set in one of:
-  -  A json file named ``.alcides.json`` or ``alcides.json`` with a single entry
-      ```json 
-        {
-          "include": "tests"
-        }
-      ```
-  - A javascript file name ``.alcides.js`` or ``.alcides.config.js`` exporting the values. <br/>
-    CommonJs modules.
-     ```javascript 
-     module.exports = {
-        // options ...
-     }
-     ```
-    ES Modules. Projects with ``"type"="module"`` set in their package.json
-    ```javascript
-    export default {
-       // options ...
+
+-   A json file named `.alcides.json` or `alcides.json` with a single entry
+    ```json
+    {
+        "include": "tests"
     }
     ```
- - In the project's ``package.json`` with the key ``alcides``.
-   ```json
-    {
-    
-      "alcides" : { 
-            "timeout": 2000,
-      }
+-   A javascript file name `.alcides.js` or `.alcides.config.js` exporting the values. <br/>
+    CommonJs modules.
+    ```javascript
+    module.exports = {
+        // options ...
     }
-   ```
+    ```
+    ES Modules. Projects with `"type"="module"` set in their package.json
+    ```javascript
+    export default {
+        // options ...
+    }
+    ```
+-   In the project's `package.json` with the key `alcides`.
+    ```json
+    {
+        "alcides": {
+            "timeout": 2000
+        }
+    }
+    ```
+
 ### Running tests
+
 Execute the test runner with your package manager
+
 ```
 npm exec alcides
 ```
+
 ```
 yarn alcides
 ```
+
 You might consider adding a test script to your package.json
 
-```json 
+```json
 {
   "scripts": {
     "test": "alcides"
@@ -96,8 +111,10 @@ You might consider adding a test script to your package.json
 ```
 
 ### Writing tests.
-Assertations are provided internally from [Chai](https://www.npmjs.com/package/chai).
-``` typescript
+
+Assertions are provided internally from [Chai](https://www.npmjs.com/package/chai).
+
+```typescript
 /* tests/example.test.ts */
 suite('Example test suite.', () => {
     interface State {
@@ -105,12 +122,12 @@ suite('Example test suite.', () => {
     }
 
     /* Called before each test is run */
-    setUp((): State => { 
+    setUp((): State => {
         return { message: 'QWERTY' }
     })
 
     /* Called after each test is run */
-    tearDown((state: State) => { 
+    tearDown((state: State) => {
         delete state.message
     })
 
@@ -120,17 +137,18 @@ suite('Example test suite.', () => {
     })
 })
 ```
-``` javascript
+
+```javascript
 /* tests/example.test.js */
 suite('Example test suite.', () => {
-    setUp(()=> {
+    setUp(() => {
         return { message: 'QWERTY' }
     })
 
     tearDown((state) => {
         delete state.message
     })
-    
+
     test('Message equals QWERTY', ({ message }) => {
         assert.deepEqual(message, 'QWERTY')
     })
