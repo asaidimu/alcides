@@ -34,11 +34,9 @@ cat types/index.d.ts >> "$TARGET/index.d.ts"
 
 cd "$TEMP"
 
-git clone "https://github.com/$REPOSITORY" --sparse --filter=blob:none --depth=1
+git clone "https://github.com/$REPOSITORY" --depth=1
 
 cd DefinitelyTyped
-
-git sparse-checkout add types/alcides types/chai
 
 [ -e "types/alcides" ] && rm -rf "types/alcides"
 
@@ -51,7 +49,7 @@ yarn lint alcides
 if ! git status | grep "nothing to commit, working tree clean" > /dev/null
 then
   echo "  Pushing to DefinitelyTyped!"
-  git add --sparse .
+  git add types/alcides
 
   git commit -m "chore: Update types for alcides to v$FULL_VERSION" --allow-empty
 
