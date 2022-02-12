@@ -8,15 +8,19 @@ export interface Config {
     timeout: number
     workers: number
     parallel: boolean
+    watch: boolean
+    files: []
 }
 
 const require = createRequire(process.cwd())
 
 export const getConfigFile = async (): Promise<string | void> => {
     const paths: Array<string> = [
-        'alcides.json',
         '.alcidesrc',
         '.alcides.json',
+        '.alcides.js',
+        'alcides.json',
+        'alcides.config.js',
         'package.json',
     ]
 
@@ -41,10 +45,18 @@ export const readConfig = async (): Promise<Config> => {
         workers: 2,
         timeout: 1000,
         parallel: false,
+        watch: false,
+        files: [],
     }
 
     if (file) {
-        let data = require(file)
+        let data
+
+        if (RegExp('.*js$').test(file)) {
+            data = (await import(file)).default
+        } else {
+            data = require(file)
+        }
 
         if (file.match(/package\.json/)) {
             if (data.alcides) {

@@ -1,4 +1,0 @@
-{
-    "include": ["dist/tests"],
-    "timeout": 2000
-}

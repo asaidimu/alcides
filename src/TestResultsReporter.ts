@@ -127,6 +127,14 @@ const printSummary = (suiteResults: Array<TestSuiteResults>) => {
         <Summary>{ passed: 0, failed: 0, count: 0 }
     )
 
+    console.log(
+        chalk.grey(
+            `  ${new Intl.DateTimeFormat('en-GB', {
+                timeStyle: 'medium',
+            }).format(new Date())}`
+        )
+    )
+
     if (count === 0) {
         console.error(chalk.red(`  0 tests ran`))
         return

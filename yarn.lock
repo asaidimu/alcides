@@ -669,6 +669,13 @@
   resolved "https://registry.yarnpkg.com/@tsconfig/node16/-/node16-1.0.2.tgz#423c77877d0569db20e1fc80885ac4118314010e"
   integrity sha512-eZxlbI8GZscaGS7kkc/trHTT5xgrjH3/1n2JDwusC9iahPKWMRvRjJSAN5mCXviuTGQ/lHnhvv8Q1YTpnfz9gA==
 
+"@types/alcides@^1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@types/alcides/-/alcides-1.4.0.tgz#d7a8bd3e3916cf61e2a964110266fa8cf5b3af00"
+  integrity sha512-uplWSxNsEww2BkVtQV18OjViXsBIV4tezeQVOUy6BcZKCeOZ1d8q815KbVUJtNU7CtVJrGnDPLS2ONtN8VMPNA==
+  dependencies:
+    "@types/chai" "*"
+
 "@types/babel-types@*", "@types/babel-types@^7.0.0":
   version "7.0.11"
   resolved "https://registry.yarnpkg.com/@types/babel-types/-/babel-types-7.0.11.tgz#263b113fa396fac4373188d73225297fb86f19a9"
@@ -681,7 +688,7 @@
   dependencies:
     "@types/babel-types" "*"
 
-"@types/chai@^4.3.0":
+"@types/chai@*", "@types/chai@^4.3.0":
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/@types/chai/-/chai-4.3.0.tgz#23509ebc1fa32f1b4d50d6a66c4032d5b8eaabdc"
   integrity sha512-/ceqdqeRraGolFTcfoXNiqjyQhZzbINDngeoAq9GoHa8PPK1yNzTaxWjA6BFWp5Ua9JpXEMSS4s5i9tS0hOJtw==

@@ -87,7 +87,7 @@ export const initTestSuite = (description: string): TestSuiteCreator => {
 
 export const createTestSuiteCollector = (): TestSuiteCollector => {
     const stack: Array<TestSuiteCreator> = []
-    const all: Array<TestSuiteCreator> = []
+    let all: Array<TestSuiteCreator> = []
     let current: TestSuiteCreator | null = null
 
     return {
@@ -135,6 +135,8 @@ export const createTestSuiteCollector = (): TestSuiteCollector => {
                 },
                 []
             )
+
+            all = []
 
             return suites
         },
