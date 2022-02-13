@@ -1,3 +1,10 @@
+## [1.4.2](https://github.com/augustinesaidimu/alcides/compare/v1.4.1...v1.4.2) (2022-02-13)
+
+
+### Bug Fixes
+
+* updated readme.md ([b8c1e62](https://github.com/augustinesaidimu/alcides/commit/b8c1e62b3ec9aebe86db58ecfee390f4bf51c831))
+
 ## [1.4.1](https://github.com/augustinesaidimu/alcides/compare/v1.4.0...v1.4.1) (2022-02-12)
 
 
