@@ -1,3 +1,10 @@
+## [1.4.3](https://github.com/asaidimu/alcides/compare/v1.4.2...v1.4.3) (2022-02-13)
+
+
+### Bug Fixes
+
+* completed milestone 4 ([1b9caed](https://github.com/asaidimu/alcides/commit/1b9caedf951e05c9e78b8fa2711058d5e1cb85aa))
+
 ## [1.4.2](https://github.com/augustinesaidimu/alcides/compare/v1.4.1...v1.4.2) (2022-02-13)
 
 
