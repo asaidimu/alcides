@@ -1,5 +1,7 @@
 # Alcides
 
+Yet another JavaScript TDD framework.
+
 [![semantic-release: angular](https://img.shields.io/badge/semantic--release-angular-e10079?logo=semantic-release)](https://github.com/semantic-release/semantic-release)
 ![license](https://img.shields.io/github/license/augustinesaidimu/alcides)
 ![tag](https://img.shields.io/github/v/tag/augustinesaidimu/alcides?sort=semver)
@@ -18,8 +20,8 @@ This project is purely an academic endeavor.
 
 ## What's in a name ?
 
-The allegory of the [Labors of Hercules](https://en.wikipedia.org/wiki/Labours_of_Hercules) <br/>
-The names _Heracles_ and _Alcaeus_ were already taken on npm, so ... _Alcides_.
+The allegory of the [Labors of Hercules](https://en.wikipedia.org/wiki/Labours_of_Hercules)<br/>
+The names _Heracles_ and _Alcaeus_ were already taken on NPM, so ... _Alcides_.
 
 ## License
 
@@ -27,7 +29,7 @@ This project is released under the [MIT](https://choosealicense.com/licenses/mit
 
 <hr/>
 
-## Contents
+## Usage
 
 -   [Installation](#installation)
 -   [Configuration](#configuration)
@@ -36,7 +38,7 @@ This project is released under the [MIT](https://choosealicense.com/licenses/mit
 
 ### Installation
 
-Install with your prefered package manager.
+Install with your preferred package manager.
 
 ```
 yarn install -D alcides
@@ -61,13 +63,13 @@ const defaultConfig = {
 
 These options can be set in one of:
 
--   A json file named `.alcides.json` or `alcides.json` with a single entry
+-   A JSON file named `.alcides.json` or `alcides.json` with a single entry
     ```json
     {
         "include": "tests"
     }
     ```
--   A javascript file name `.alcides.js` or `.alcides.config.js` exporting the values. <br/>
+-   A JavaScript file name `.alcides.js` or `.alcides.config.js` exporting the values. <br/>
     CommonJs modules.
     ```javascript
     module.exports = {

@@ -76,5 +76,15 @@
     "dependencies": {
         "chalk": "^5.0.0",
         "workerpool": "^6.2.0"
-    }
+    },
+    "keywords": [
+        "unit testing",
+        "tdd",
+        "xunit",
+        "test",
+        "testing",
+        "testrunner",
+        "assert",
+        "framework"
+    ]
 }
