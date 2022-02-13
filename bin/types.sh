@@ -2,7 +2,6 @@
 set -eu
 
 NODE_ENV=${NODE_ENV:-""}
-
 TEMP=$(mktemp -d)
 TARGET="$TEMP/types/alcides"
 REPOSITORY="asaidimu/DefinitelyTyped"
@@ -34,9 +33,11 @@ cat types/index.d.ts >> "$TARGET/index.d.ts"
 
 cd "$TEMP"
 
-git clone "https://github.com/$REPOSITORY" --depth=1
+git clone "https://github.com/$REPOSITORY" --sparse --filter=blob:none --depth=1
 
 cd DefinitelyTyped
+
+git sparse-checkout add types/alcides types/chai notNeededPackages.json
 
 [ -e "types/alcides" ] && rm -rf "types/alcides"
 
