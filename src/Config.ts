@@ -2,14 +2,44 @@ import { createRequire } from 'module'
 import { access } from 'fs/promises'
 import { constants } from 'fs'
 import path from 'path'
+import yargs from 'yargs'
 
-export interface Config {
+interface Arguments {
+    verbose: boolean
+    watch: boolean
+}
+
+export interface Config extends Arguments {
     include: string | Array<string>
     timeout: number
     workers: number
     parallel: boolean
     watch: boolean
     files: []
+}
+
+const args: any = {
+    verbose: {
+        type: 'boolean',
+        default: true,
+        describe: 'Show verbose reports.',
+    },
+    watch: {
+        type: 'boolean',
+        default: false,
+        describe: 'Run in watch mode.',
+    },
+    // parallel: { type: "boolean", default: false, describe: "Run tests in parallel." }
+}
+
+const config: Config = {
+    include: 'tests/*.js',
+    workers: 2,
+    timeout: 1000,
+    parallel: false,
+    watch: false,
+    files: [],
+    verbose: true,
 }
 
 const require = createRequire(process.cwd())
@@ -37,17 +67,8 @@ export const getConfigFile = async (): Promise<string | void> => {
     } catch {}
 }
 
-export const readConfig = async (): Promise<Config> => {
+export const readConfig = async (): Promise<any> => {
     const file = await getConfigFile()
-
-    const config: Config = {
-        include: 'tests',
-        workers: 2,
-        timeout: 1000,
-        parallel: false,
-        watch: false,
-        files: [],
-    }
 
     if (file) {
         let data
@@ -73,3 +94,17 @@ export const readConfig = async (): Promise<Config> => {
 
     return config
 }
+
+export default await (async (): Promise<Config> => {
+    const config = await readConfig()
+    const epilog = 'Docs can be found at https://github.com/asaidimu/alcides'
+    const usage = 'Usage:\n  alcides [opts..]'
+
+    const argv = yargs(process.argv.slice(2))
+        .options(args)
+        .usage(usage)
+        .alias('h', 'help')
+        .epilog(epilog).argv
+
+    return Object.assign(argv, config)
+})()

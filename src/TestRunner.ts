@@ -1,4 +1,3 @@
-import { opendir } from 'fs/promises'
 import { exitWithInvalidConfigError } from './Errors.js'
 import path from 'path'
 import { Config } from './Config.js'
@@ -11,45 +10,20 @@ import EventEmitter from 'events'
 import { watch } from 'fs'
 import { RESULTS } from './Constants.js'
 import { Worker } from 'worker_threads'
+import glob from 'fast-glob'
 
-const getEntries = async (location: string) => {
-    try {
-        const entries = await opendir(location)
-        return entries
-    } catch (error: any) {
-        exitWithInvalidConfigError(error)
-    }
-}
-
-const formatPath = (name: string, location: string): string => {
+const formatPath = (name: string): string => {
     return path.format({
         base: name,
-        dir: path.format({
-            base: location,
-            dir: process.cwd(),
-        }),
+        dir: process.cwd(),
     })
 }
 
-export const findTests = async (config: {
-    include: Readonly<string> | ReadonlyArray<string>
-}): Promise<Array<string>> => {
-    const { include } = config
-    const locations = Array.isArray(include) ? include : [include]
-
-    const testFiles: Array<string> = []
-
-    for (const location of locations) {
-        const entries = await getEntries(location)
-
-        for await (const { name } of entries!) {
-            if (name.match(/.*.js$/)) {
-                testFiles.push(formatPath(name, location))
-            }
-        }
-    }
-
-    return testFiles
+export const findFiles = async (
+    include: string | Array<string>
+): Promise<Array<string>> => {
+    const paths = await glob(include)
+    return paths.map((name) => formatPath(name))
 }
 
 export interface TestRunnerInterface {
@@ -145,6 +119,6 @@ export class TestRunner extends EventEmitter implements TestRunnerInterface {
     }
 
     async findTests() {
-        return findTests(this.config)
+        return findFiles(this.config.include)
     }
 }

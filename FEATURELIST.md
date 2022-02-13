@@ -24,10 +24,15 @@
 
 ## Milestone 4
 
+-   [x] Parse command line arguments.
+-   [x] Allow for configuration.
+
+## Milestone 5
+
 -   [ ] Serve results via ipc -> named pipe.
 -   [ ] Create a client that can display results from named pipe.
 
-## Milestone 5
+## Milestone 6
 
 -   [ ] Implement code coverage.
 -   [ ] Implement intelligent test analysis.

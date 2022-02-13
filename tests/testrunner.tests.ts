@@ -8,12 +8,13 @@ suite('Alcides Test Runner', () => {
     setUp((): State => {
         // TODO: Break up config.
         const runner = new TestRunner({
-            include: ['assets/tests'],
+            include: ['assets/tests/*.js'],
             timeout: 2000,
             workers: 2,
             parallel: false,
             watch: false,
             files: [],
+            verbose: true,
         })
         return { runner }
     })

@@ -1,4 +1,5 @@
 import { Config, readConfig } from '../src/Config.js'
+import glob from 'fast-glob'
 
 suite('Alcides Config', () => {
     test('Configs are loaded from a file.', async () => {
@@ -10,7 +11,13 @@ suite('Alcides Config', () => {
         assert.isNumber(config.timeout)
         assert.isNumber(config.workers)
         assert.isBoolean(config.parallel)
+        assert.isBoolean(config.verbose)
+    })
 
-        assert.equal(6, Object.values(config).length)
+    test('Glob can find files.', async () => {
+        const paths = ['assets/glob/src/*.js', 'assets/glob/*.js']
+        const files = ['assets/glob/src/example.js', 'assets/glob/example.js']
+        const found = await glob(paths)
+        assert.deepEqual(files, found)
     })
 })
