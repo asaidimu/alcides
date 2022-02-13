@@ -14,7 +14,7 @@
 There exists better and more featured unit testing frameworks in the JavaScript
 ecosystem; Why then, would I go about creating another? **Academics**. <br/>
 
-This project is purely an academic endeavor and _should not be used in actual development_.
+This project is purely an academic endeavor.
 
 ## What's in a name ?
 
