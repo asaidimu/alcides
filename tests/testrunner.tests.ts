@@ -6,7 +6,6 @@ suite('Alcides Test Runner', () => {
     }
 
     setUp((): State => {
-        // TODO: Break up config.
         const runner = new TestRunner({
             include: ['assets/tests/*.js'],
             timeout: 2000,
@@ -29,5 +28,18 @@ suite('Alcides Test Runner', () => {
         assert.equal(results!.length, 10)
     })
 
-    /* test('Run tests in parallel', async () => { }) */
+    test('Run tests in parallel', async () => {
+        const runner = new TestRunner({
+            include: ['assets/tests/*.js'],
+            timeout: 2000,
+            workers: 2,
+            parallel: true,
+            watch: false,
+            files: [],
+            verbose: true,
+        })
+
+        const results = await runner.run()
+        assert.equal(results!.length, 10)
+    })
 })

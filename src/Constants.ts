@@ -2,6 +2,7 @@ import { unknownSymbolError } from './Errors.js'
 
 export const RESULTS = Symbol.for('TestRunnerCompleted Event')
 export const TIMEOUT = Symbol.for('TestCaseRunTimedOut Event')
+export const RUN = 123456789
 export const ALCIDES = Symbol.for('ALCIDES')
 export const SETUP_HOOK = 'SetUp'
 export const TEARDOWN_HOOK = 'TearDown'

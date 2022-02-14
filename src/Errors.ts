@@ -28,9 +28,7 @@ export const exitWithInvalidConfigError = (error: any) => {
         console.log()
         console.log(`    ${chalk.red('Error')}`)
         console.log(
-            `    The provided include path ${chalk.blue(
-                error.path
-            )} does not exist!`
+            `    The provided path ${chalk.blue(error.path)} does not exist!`
         )
         console.log('    Please check your configurations.')
         console.log()

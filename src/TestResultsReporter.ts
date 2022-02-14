@@ -2,6 +2,8 @@ import { TestSuiteResults } from './TestSuiteRunner.js'
 import chalk from 'chalk'
 import { getSymbolName } from './Constants.js'
 import { TestResult } from './TestCaseRunner.js'
+import { Config } from './Config.js'
+import ora from 'ora'
 
 // const formatErrorLocation = (str: string) => {
 //    let result = '';
@@ -15,6 +17,16 @@ import { TestResult } from './TestCaseRunner.js'
 //    }
 //    return result;
 //};
+
+export const logTime = () => {
+    console.log(
+        chalk.grey(
+            `  ${new Intl.DateTimeFormat('en-GB', {
+                timeStyle: 'medium',
+            }).format(new Date())}`
+        )
+    )
+}
 
 const getLogger = (prefix: string) => {
     return ([id, error]: any) => {
@@ -127,14 +139,7 @@ const printSummary = (suiteResults: Array<TestSuiteResults>) => {
         <Summary>{ passed: 0, failed: 0, count: 0 }
     )
 
-    console.log(
-        chalk.grey(
-            `  ${new Intl.DateTimeFormat('en-GB', {
-                timeStyle: 'medium',
-            }).format(new Date())}`
-        )
-    )
-
+    logTime()
     if (count === 0) {
         console.error(chalk.red(`  0 tests ran`))
         return
@@ -146,13 +151,29 @@ const printSummary = (suiteResults: Array<TestSuiteResults>) => {
 }
 
 export class TestResultsReporter {
+    private config: any = {}
+    private spinner: any
+
+    constructor() {
+        this.spinner = ora('Waiting for changes ...').start()
+    }
+
+    setConfig(config: Readonly<Config>) {
+        this.config = config
+    }
+
     async report(results: Array<TestSuiteResults>): Promise<void> {
+        this.spinner.stop()
         console.log()
-        results.forEach(printSuiteResults)
+        if (this.config.verbose) {
+            results.forEach(printSuiteResults)
+        }
         console.log()
         printSummary(results)
         console.log()
         results.forEach(printErrors)
+
+        this.spinner.start()
     }
 }
 

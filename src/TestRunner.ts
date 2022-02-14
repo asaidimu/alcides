@@ -1,16 +1,18 @@
-import { exitWithInvalidConfigError } from './Errors.js'
+import EventEmitter from 'events'
+import glob from 'fast-glob'
 import path from 'path'
 import { Config } from './Config.js'
-import { createTestSuiteCollector, TestSuiteCollector } from './TestSuite.js'
-
-import run, { TestSuiteResults } from './TestSuiteRunner.js'
-import TestCaseRunner, { TestCaseRunnerInterface } from './TestCaseRunner.js'
-import { assert } from 'chai'
-import EventEmitter from 'events'
-import { watch } from 'fs'
-import { RESULTS } from './Constants.js'
+import { RESULTS, RUN } from './Constants.js'
+import { TestSuiteResults } from './TestSuiteRunner.js'
 import { Worker } from 'worker_threads'
-import glob from 'fast-glob'
+import { exitWithInvalidConfigError } from './Errors.js'
+import { watch } from 'fs'
+import { logTime } from './TestResultsReporter.js'
+
+export interface TestRunnerInterface {
+    findTests: { (): Promise<Array<string>> }
+    run: { (): Promise<Array<TestSuiteResults> | void> }
+}
 
 const formatPath = (name: string): string => {
     return path.format({
@@ -26,39 +28,13 @@ export const findFiles = async (
     return paths.map((name) => formatPath(name))
 }
 
-export interface TestRunnerInterface {
-    findTests: { (): Promise<Array<string>> }
-    run: { (): Promise<Array<TestSuiteResults> | void> }
-}
-
 export class TestRunner extends EventEmitter implements TestRunnerInterface {
     private config: Config
-    private runner: TestCaseRunnerInterface
+    private running: boolean = false
 
     constructor(config: Config) {
         super()
         this.config = config
-        this.runner = new TestCaseRunner(config)
-    }
-
-    private async runOnce(): Promise<Array<TestSuiteResults>> {
-        const paths = await this.findTests()
-
-        const {
-            getTestSuites,
-            suite,
-            test,
-            setUp,
-            tearDown,
-        }: TestSuiteCollector = createTestSuiteCollector()
-
-        Object.assign(global, { suite, test, setUp, tearDown, assert })
-
-        for (const testFile of paths) {
-            await import(testFile)
-        }
-
-        return run(this.runner, getTestSuites())
     }
 
     private async checkFiles() {
@@ -67,55 +43,102 @@ export class TestRunner extends EventEmitter implements TestRunnerInterface {
             exitWithInvalidConfigError(new Error('No files were specified.'))
         }
     }
+    private workerPath(): string {
+        const url = import.meta.url
 
-    private async runWatcher() {
-        const { files } = this.config
-
-        const state: { running: boolean } = { running: false }
-
-        let url = import.meta.url
-        url = url.substring(7).slice(0, url.lastIndexOf('/') - 7)
-
-        const worker_url = path.format({
+        return path.format({
             base: 'WatchWorker.js',
-            dir: url,
+            dir: url.substring(7).slice(0, url.lastIndexOf('/') - 7),
         })
-
-        const onFileChange = async () => {
-            if (state.running) {
-                return
-            }
-
-            const paths = await this.findTests()
-
-            const worker = new Worker(worker_url, {
-                workerData: {
-                    config: this.config,
-                    paths,
-                },
-            })
-
-            worker.on('message', (results: any) => {
-                this.emit(RESULTS, results)
-                state.running = false
-            })
-        }
-
-        files.forEach((file) => {
-            watch(file, onFileChange)
-        })
-
-        onFileChange()
     }
 
-    async run(): Promise<Array<TestSuiteResults> | void> {
-        if (this.config.watch) {
-            this.checkFiles()
-            this.runWatcher()
+    private async createWorker(paths: Array<string>): Promise<Worker> {
+        return new Worker(this.workerPath(), {
+            workerData: {
+                config: this.config,
+                paths,
+            },
+        })
+    }
+
+    private async runWorker(
+        paths: Array<string>
+    ): Promise<Array<TestSuiteResults>> {
+        const worker = await this.createWorker(paths)
+
+        return new Promise((resolve) => {
+            worker.on('message', (results: any) => {
+                if (Array.isArray(results)) {
+                    resolve(results)
+                    worker.terminate()
+                }
+            })
+            worker.postMessage(RUN)
+        })
+    }
+
+    private async runInParallel(): Promise<Array<TestSuiteResults>> {
+        const { workers } = this.config
+
+        const tests = (await findFiles(this.config.include)).reduce(
+            (all: Array<Array<string>>, path: string, index: number) => {
+                all[index % workers].push(path)
+                return all
+            },
+            new Array(workers).fill(0).map((_) => [])
+        )
+
+        const results = await Promise.all(
+            tests.map((paths) => {
+                return this.runWorker(paths)
+            })
+        )
+
+        return results.reduce((all: any, curr: any) => all.concat(curr), [])
+    }
+
+    private async runOnFileChange() {
+        if (this.running) {
             return
         }
 
-        return this.runOnce()
+        this.running = true
+
+        const worker = await this.createWorker(
+            await findFiles(this.config.include)
+        )
+
+        worker.on('message', (results: any) => {
+            if (Array.isArray(results)) {
+                this.emit(RESULTS, results)
+                this.running = false
+            }
+        })
+
+        worker.postMessage(RUN)
+    }
+
+    private async startWatcher() {
+        this.checkFiles()
+        this.config.files.forEach((file) => {
+            try {
+                watch(file, this.runOnFileChange.bind(this))
+            } catch (e) {
+                exitWithInvalidConfigError(e)
+            }
+        })
+
+        this.runOnFileChange()
+    }
+
+    async run(): Promise<Array<TestSuiteResults> | void> {
+        if (this.config.parallel) {
+            return this.runInParallel()
+        } else if (this.config.watch) {
+            return this.startWatcher()
+        } else {
+            return this.runWorker(await findFiles(this.config.include))
+        }
     }
 
     async findTests() {
