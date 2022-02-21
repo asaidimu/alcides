@@ -1,3 +1,10 @@
+## [1.4.5](https://github.com/asaidimu/alcides/compare/v1.4.4...v1.4.5) (2022-02-21)
+
+
+### Bug Fixes
+
+* fix typo in documentation ([545bc54](https://github.com/asaidimu/alcides/commit/545bc54faf9d8cf02cc751746799633d9a8a7b80))
+
 ## [1.4.4](https://github.com/asaidimu/alcides/compare/v1.4.3...v1.4.4) (2022-02-21)
 
 
