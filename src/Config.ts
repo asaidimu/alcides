@@ -50,7 +50,7 @@ const getArgv = (): Arguments => {
         include: {
             type: 'array',
             alias: 'i',
-            describe: 'Files to watch.',
+            describe: 'Path or glob to test files.',
         },
         workers: {
             type: 'number',
