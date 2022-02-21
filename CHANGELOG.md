@@ -1,3 +1,13 @@
+## [1.4.4](https://github.com/asaidimu/alcides/compare/v1.4.3...v1.4.4) (2022-02-21)
+
+
+### Bug Fixes
+
+* add routine to exit with non-zero status when errors occur ([042e144](https://github.com/asaidimu/alcides/commit/042e144d5313b76533bdedf116d117bd0b36bf16))
+* added ability to run tests in parallel ([e72b731](https://github.com/asaidimu/alcides/commit/e72b731981fd04d67c9538ef59cd9325022e9410))
+* fix rebase ([e23c7bc](https://github.com/asaidimu/alcides/commit/e23c7bcf757d52e02feba59028215c7c751909e3))
+* rework project structure. ([babb022](https://github.com/asaidimu/alcides/commit/babb022c8801f3f0df807b8e609d89c6818240ff))
+
 ## [1.4.3](https://github.com/asaidimu/alcides/compare/v1.4.2...v1.4.3) (2022-02-13)
 
 
