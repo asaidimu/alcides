@@ -11,7 +11,7 @@ Yet another node based JavaScript TDD framework.
 ![@types/chai](https://img.shields.io/npm/dependency-version/alcides/@types/chai)
 ![@types/alcides](https://img.shields.io/npm/dependency-version/alcides/@types/alcides)
 
-## Re-inventing the wheel.
+## Re-inventing the wheel
 
 There exists better and more featured unit testing frameworks in the JavaScript
 ecosystem; Why then, would I go about creating another? **Academics**. <br/>
@@ -52,7 +52,7 @@ yarn install -D alcides
 npm install --save-dev alcides
 ```
 
-### Writing tests.
+### Writing tests
 
 Assertions are provided internally from [Chai](https://www.npmjs.com/package/chai).
 
@@ -166,7 +166,7 @@ const config: Config = {
 
 ```
 
-#### Configuration via Files
+#### Configuration via files
 
 These options can be set in one of the following files:
 
@@ -198,9 +198,11 @@ These options can be set in one of the following files:
     }
     ```
 
-#### Configuration via Arguments
+#### Configuration via arguments
 
 All the options can be overridden via command-line arguments.
 Run the following command for reference.
 
-`sh alcides --help `
+```bash
+alcides --help
+```
