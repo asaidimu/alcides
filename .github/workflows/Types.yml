@@ -1,14 +1,12 @@
 name: ReleaseTypes
 on:
     workflow_dispatch:
-
-    workflow_run:
-        workflows: [Release]
-        types:
-            - completed
+        workflow_run:
+            workflows: [Release]
+            types: [completed]
 
 jobs:
-    release:
+    on-success:
         name: Release Types
         runs-on: ubuntu-latest
         steps:
@@ -22,15 +20,3 @@ jobs:
               with:
                   gh_token: ${{ secrets.GITHUB_TOKEN }}
                   git_token: ${{ secrets.GIT_TOKEN }}
-#           - name: Setup Node.js
-#             uses: actions/setup-node@v2
-#             with:
-#                 node-version: 'lts/*'
-
-#           - name: Install dependencies
-#             run: npm run ci
-
-#           - name: Build and merge.
-#             run: npm run build:types
-#             env:
-#                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
