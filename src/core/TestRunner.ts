@@ -114,11 +114,31 @@ const runOnFileChange = async ({ config, events }: runFOpts) => {
     onChange()
 }
 
+export const hasErrors = ({ errors, results }: TestRunnerResults): boolean => {
+    if (Object.values(errors).length > 0) {
+        return true
+    }
+
+    for (const result of results) {
+        if (Object.values(result.errors).length > 0) {
+            return true
+        }
+
+        for (const r of result.results) {
+            if (r.error !== null) {
+                return true
+            }
+        }
+    }
+
+    return false
+}
+
 interface runOpts {
     config: Config
     events?: EventEmitter
 }
-type runResults = Promise<TestRunnerResults | void>
+type runResults = Promise<TestRunnerResults | undefined>
 
 const runTests = async ({ config, events }: runOpts): runResults => {
     if (config.parallel) {

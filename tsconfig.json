@@ -2,7 +2,7 @@
     "compilerOptions": {
         "strict": true,
         "incremental": true,
-        "allowJs": false,
+        "allowJs": true,
         "esModuleInterop": true,
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,

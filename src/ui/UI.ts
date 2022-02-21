@@ -75,11 +75,10 @@ const getErrorLogger = (prefix: string) => {
     }
 }
 
-const printErrors = ({
+const printErrors = async ({
     results,
-    description,
     errors,
-}: TestSuiteResults): void => {
+}: TestSuiteResults): Promise<void> => {
     const failed: any = results.reduce((all: any, curr: TestResult, _) => {
         if (curr.error !== null) all.push([curr.description, curr.error])
         return all
@@ -88,15 +87,15 @@ const printErrors = ({
     const suiteErrorSymbols = Object.keys(errors)
 
     if (failed.length != 0 || suiteErrorSymbols.length != 0) {
-        console.log(
-            `\n ${chalk.yellow('TestSuite')}: ${chalk.bold(description)}\n`
+        await Promise.allSettled(
+            suiteErrorSymbols.map((key) =>
+                getErrorLogger('SuiteError')([key, errors[key]])
+            )
         )
 
-        suiteErrorSymbols.forEach((key) => {
-            getErrorLogger('SuiteError')([key, errors[key]])
-        })
-
-        failed.forEach(getErrorLogger('TestCaseError'))
+        await Promise.allSettled(
+            failed.map((err: [any]) => getErrorLogger('SuiteError')(err))
+        )
     }
 }
 
@@ -192,8 +191,13 @@ export const report = async ({ results, errors, verbose }: reportOpts) => {
 
     printSummary(results)
     console.log()
-    results.forEach(printErrors)
-    Object.entries(errors).forEach(getErrorLogger('TestCollector'))
+    await Promise.allSettled(results.map((result) => printErrors(result)))
+
+    await Promise.allSettled(
+        Object.entries(errors).map((error) =>
+            getErrorLogger('TestCollector')(error)
+        )
+    )
 }
 
 export const startUI = ({ config }: { config: Config }): EventEmitter => {
@@ -217,7 +221,7 @@ export const startUI = ({ config }: { config: Config }): EventEmitter => {
     events.on(STARTED, async () => {
         spinner.stop()
         console.clear()
-        console.log('\n\n')
+        console.log('\n')
         logTime()
         console.log('\n')
         await pause()
