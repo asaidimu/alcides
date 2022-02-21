@@ -153,7 +153,7 @@ The following are the defaults for all options.
 ```typescript
 /* Defaults */
 const config: Config = {
-    include: ['tests/**/*.js', 'test/**/*.js']
+    include: ['tests/**/*.js', 'test/**/*.js'],
     verbose: true,
     timeout: 1000,
 
@@ -163,7 +163,6 @@ const config: Config = {
     parallel: false,
     workers: 2,
 }
-
 ```
 
 #### Configuration via files
@@ -176,7 +175,7 @@ These options can be set in one of the following files:
         "include": "tests"
     }
     ```
--   A JavaScript file named `.alcides.js` or `.alcides.config.js` exporting the values. <br/>
+-   A JavaScript file named `.alcides.js` or `alcides.config.js` exporting the values. <br/>
     CommonJs modules.
     ```javascript
     module.exports = {
