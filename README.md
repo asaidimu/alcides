@@ -1,6 +1,6 @@
-# Alcides
+# [Alcides](https://www.npmjs.com/package/alcides)
 
-Yet another JavaScript TDD framework.
+Yet another node based JavaScript TDD framework.
 
 [![semantic-release: angular](https://img.shields.io/badge/semantic--release-angular-e10079?logo=semantic-release)](https://github.com/semantic-release/semantic-release)
 ![license](https://img.shields.io/github/license/augustinesaidimu/alcides)
@@ -20,8 +20,12 @@ This project is purely an academic endeavor.
 
 ## What's in a name ?
 
-The allegory of the [Labors of Hercules](https://en.wikipedia.org/wiki/Labours_of_Hercules)<br/>
-The names _Heracles_ and _Alcaeus_ were already taken on NPM, so ... _Alcides_.
+See the [Labors of Hercules](https://en.wikipedia.org/wiki/Labours_of_Hercules)<br/>
+
+## Contributing
+
+Contributions are welcome.
+See [here](https://github.com/asaidimu/alcides/blob/main/CONTRIBUTING.md) on how to contribute.
 
 ## License
 
@@ -50,26 +54,59 @@ npm install --save-dev alcides
 
 ### Configuration
 
-The following options are offered to configure the runner.
+Several options are offered to configure the runner. This can be done via command-line arguments or in a file.
 
-```javascript
-const defaultConfig = {
-    include: 'tests' /* where to look for test files. */,
-    timeout: 1000 /* maximum run time for each test.*/,
-    watch: false /* determines whether the runner should run once or monitor for changes.*/,
-    files: [] /* a list of files to watch. */,
+```typescript
+/* Config Type */
+export interface Config {
+    include:
+        | string
+        | Array<string> /* a list of test files or globs use to match test files */
+    verbose: boolean /* True produces verbose output, false shows errors only.*/
+    timeout: number /* maximum run time for each test.*/
+
+    parallel: boolean /* determines whether tests should be run in parallel.*/
+    workers: number /* number of workers used when runnning in parallel.*/
+
+    watch: boolean /* determines whether the runner should run once or monitor for changes.*/
+    files: [] /* a list of files to watch. */
 }
 ```
 
-These options can be set in one of:
+The following are the defaults for all options.
 
--   A JSON file named `.alcides.json` or `alcides.json` with a single entry
+```javascript
+/* Defaults */
+const config = {
+    include: ['tests/**/*.js', 'test/**/*.js']
+    verbose: true,
+    timeout: 1000,
+
+    watch: false,
+    files: [],
+
+    parallel: false,
+    workers: 2,
+}
+
+```
+
+#### Configuration via Arguments
+
+See `alcides --help` for help with command-line arguments.
+Configuration passed via the command line override those provided in files.
+
+#### File Configuration
+
+These options can be set in one of the following files:
+
+-   A JSON file named `.alcides.json` or `alcides.json`.
     ```json
     {
         "include": "tests"
     }
     ```
--   A JavaScript file name `.alcides.js` or `.alcides.config.js` exporting the values. <br/>
+-   A JavaScript file named `.alcides.js` or `.alcides.config.js` exporting the values. <br/>
     CommonJs modules.
     ```javascript
     module.exports = {

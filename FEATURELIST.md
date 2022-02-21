@@ -20,19 +20,9 @@
 -   [x] Pass state from setUp to tests.
 -   [x] Run asynchronous tests.
 -   [x] Kill and Report long running tests.
--   [ ] Run tests in parallel.
+-   [x] Run tests in parallel.
 
 ## Milestone 4
 
 -   [x] Parse command line arguments.
 -   [x] Allow for configuration.
-
-## Milestone 5
-
--   [ ] Serve results via ipc -> named pipe.
--   [ ] Create a client that can display results from named pipe.
-
-## Milestone 6
-
--   [ ] Implement code coverage.
--   [ ] Implement intelligent test analysis.

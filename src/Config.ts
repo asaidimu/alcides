@@ -4,12 +4,8 @@ import { constants } from 'fs'
 import path from 'path'
 import yargs from 'yargs'
 
-interface Arguments {
+export interface Config {
     verbose: boolean
-    watch: boolean
-}
-
-export interface Config extends Arguments {
     include: string | Array<string>
     timeout: number
     workers: number
@@ -18,22 +14,68 @@ export interface Config extends Arguments {
     files: []
 }
 
-const args: any = {
-    verbose: {
-        type: 'boolean',
-        default: true,
-        describe: 'Show verbose reports.',
-    },
-    watch: {
-        type: 'boolean',
-        default: false,
-        describe: 'Run in watch mode.',
-    },
-    // parallel: { type: "boolean", default: false, describe: "Run tests in parallel." }
+type Arguments =
+    | {
+          [x: string]: unknown
+          help: unknown
+          $0: string
+          _: (string | number)[]
+      }
+    | Promise<{
+          [x: string]: unknown
+          help: unknown
+          $0: string
+          _: (string | number)[]
+      }>
+
+const getArgv = (): Arguments => {
+    const args: any = {
+        verbose: {
+            type: 'boolean',
+            describe: 'Show verbose reports.',
+        },
+        watch: {
+            type: 'boolean',
+            describe: 'Run in watch mode.',
+        },
+        parallel: {
+            type: 'boolean',
+            describe: 'Run tests in parallel.',
+        },
+        files: {
+            type: 'array',
+            alias: 'f',
+            describe: 'Files to watch.',
+        },
+        include: {
+            type: 'array',
+            alias: 'i',
+            describe: 'Files to watch.',
+        },
+        workers: {
+            type: 'number',
+            alias: 'r',
+            describe: 'Number of workers.',
+        },
+        timeout: {
+            type: 'number',
+            alias: 't',
+            describe: 'Test timout in ms.',
+        },
+    }
+
+    const epilog = 'Documentation at https://www.npmjs.com/package/alcides'
+
+    const usage = 'Usage:\n  alcides [opts..]'
+    return yargs(process.argv.slice(2))
+        .options(args)
+        .usage(usage)
+        .alias('h', 'help')
+        .epilog(epilog).argv
 }
 
 const config: Config = {
-    include: 'tests/*.js',
+    include: ['tests/**/*.js', 'test/**/*.js'],
     workers: 2,
     timeout: 1000,
     parallel: false,
@@ -41,8 +83,6 @@ const config: Config = {
     files: [],
     verbose: true,
 }
-
-const require = createRequire(process.cwd())
 
 export const getConfigFile = async (): Promise<string | void> => {
     const paths: Array<string> = [
@@ -69,6 +109,7 @@ export const getConfigFile = async (): Promise<string | void> => {
 
 export const readConfig = async (): Promise<any> => {
     const file = await getConfigFile()
+    const require = createRequire(process.cwd())
 
     if (file) {
         let data
@@ -82,8 +123,6 @@ export const readConfig = async (): Promise<any> => {
         if (file.match(/package\.json/)) {
             if (data.alcides) {
                 data = data.alcides
-            } else if (data.tests) {
-                data = data.tests
             } else {
                 data = {}
             }
@@ -97,14 +136,9 @@ export const readConfig = async (): Promise<any> => {
 
 export default await (async (): Promise<Config> => {
     const config = await readConfig()
-    const epilog = 'Docs can be found at https://github.com/asaidimu/alcides'
-    const usage = 'Usage:\n  alcides [opts..]'
 
-    const argv = yargs(process.argv.slice(2))
-        .options(args)
-        .usage(usage)
-        .alias('h', 'help')
-        .epilog(epilog).argv
+    const argv = getArgv()
 
-    return Object.assign(argv, config)
+    const result = Object.assign(config, argv)
+    return result
 })()
