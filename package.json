@@ -16,7 +16,7 @@
         "build:docs:watch": "nodemon --exec 'yarn build:docs' --watch src -q",
         "pretest:ci": "yarn build",
         "test:ci": "yarn test",
-        "test:push": "yarn build:dist && yarn test && cd ./dist && npm publish --dry-run $PWD && cd ../ && yarn semantic-release",
+        "test:push": "yarn build:dist && yarn test --no-watch --parallel && cd ./dist && npm publish --dry-run $PWD && cd ../ && yarn semantic-release",
         "build:dist": "./bin/dist.sh",
         "build:types": "./bin/types.sh"
     },
