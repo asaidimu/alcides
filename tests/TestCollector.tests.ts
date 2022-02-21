@@ -26,7 +26,9 @@ suite('TestCollector.', () => {
     })
 
     test('TestCollector can collect tests.', async () => {
-        const tests = await find({ globs: ['assets/tests/**/*.test.js'] })
+        const tests = await find({
+            globs: ['tests/fixtures/tests/**/*.test.js'],
+        })
         const { suites, errors }: TestCollectorResults = await collect({
             tests,
         })

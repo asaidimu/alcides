@@ -8,7 +8,7 @@ suite('Alcides Test Runner', () => {
 
     setUp((): State => {
         const config: Config = {
-            include: ['assets/tests/*.js'],
+            include: ['tests/fixtures/tests/*.js'],
             timeout: 2000,
             workers: 2,
             parallel: false,

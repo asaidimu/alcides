@@ -15,8 +15,14 @@ suite('Alcides Config', () => {
     })
 
     test('Glob can find files.', async () => {
-        const paths = ['assets/glob/src/*.js', 'assets/glob/*.js']
-        const files = ['assets/glob/src/example.js', 'assets/glob/example.js']
+        const paths = [
+            'tests/fixtures/glob/src/*.js',
+            'tests/fixtures/glob/*.js',
+        ]
+        const files = [
+            'tests/fixtures/glob/src/example.js',
+            'tests/fixtures/glob/example.js',
+        ]
         const found = await glob(paths)
         assert.deepEqual(files, found)
     })

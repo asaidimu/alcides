@@ -8,9 +8,9 @@ suite('File.', () => {
             .fill('')
             .map(
                 (_, i: number) =>
-                    `${process.cwd()}/assets/tests/${i + 1}.test.js`
+                    `${process.cwd()}/tests/fixtures/tests/${i + 1}.test.js`
             )
-        const testGlobs = ['assets/tests/**/*.test.js']
+        const testGlobs = ['tests/fixtures/tests/**/*.test.js']
 
         const found = await find({ globs: testGlobs })
         assert.deepEqual(expected, found)
