@@ -5,8 +5,9 @@ import { TestHook } from './TestSuite.js'
 
 import { setTimeout } from 'timers/promises'
 
-interface CodedError extends Error {
+export interface CodedError extends Error {
     code?: string
+    position?: any
 }
 
 export type TestResult = {

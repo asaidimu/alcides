@@ -8,7 +8,7 @@ import { RESULTS } from './Constants.js'
 import EventEmitter from 'events'
 
 export interface TestRunnerResults {
-    errors: any
+    errors: { [key: string | number]: Error }
     results: Array<TestSuiteResults>
 }
 
