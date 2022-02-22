@@ -10,6 +10,10 @@ export type TestSuiteResults = {
     errors: TestSuiteErrors
 }
 
+const promiseToResult = ({ status, value, reason }: any) => {
+    return status == 'fulfilled' ? value : reason
+}
+
 type checkOpts = { [key: string]: TestHook }
 type checkResults = Promise<TestSuiteErrors>
 
@@ -56,7 +60,7 @@ export const run = async ({ timeout, suite }: runSuiteOpts): runSuiteResult => {
         return result
     }
 
-    result.results = await Promise.all(
+    const testResults = await Promise.allSettled(
         tests.map(({ description, testFunction }) =>
             runTestCase({
                 timeout,
@@ -69,6 +73,8 @@ export const run = async ({ timeout, suite }: runSuiteOpts): runSuiteResult => {
         )
     )
 
+    result.results = testResults.map(promiseToResult)
+
     return result
 }
 
@@ -80,8 +86,10 @@ interface runOpts {
 type runResults = Promise<Array<TestSuiteResults>>
 export async function runTestSuite({ timeout, suite }: runOpts): runResults {
     const suites = Array.isArray(suite) ? suite : [suite]
-
-    return Promise.all(suites.map((suite) => run({ suite, timeout })))
+    const results = await Promise.allSettled(
+        suites.map((suite) => run({ suite, timeout }))
+    )
+    return results.map(promiseToResult)
 }
 
 export default runTestSuite

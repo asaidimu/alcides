@@ -10,7 +10,7 @@
         "clean": "rm -rf dist",
         "prebuild": "yarn clean",
         "build": "yarn tsc",
-        "test": "yarn --silent --offline node ./dist/index.js",
+        "test": "yarn --silent --offline alcides",
         "build:watch": "yarn tsc --watch",
         "build:docs": "yarn jsdoc -c jsdoc.json",
         "build:docs:watch": "nodemon --exec 'yarn build:docs' --watch src -q",
@@ -18,6 +18,7 @@
         "test:ci": "yarn alcides --no-watch --parallel",
         "test:push": "yarn build:dist && yarn test --no-watch --parallel && cd ./dist && npm publish --dry-run $PWD && cd ../ && yarn semantic-release",
         "build:dist": "./bin/dist.sh",
+        "build:next": "./bin/next.sh",
         "build:types": "./bin/types.sh"
     },
     "devDependencies": {

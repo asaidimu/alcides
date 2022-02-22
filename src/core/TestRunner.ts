@@ -39,6 +39,10 @@ interface runWOpts {
 type runWResult = Promise<TestRunnerResults>
 const runWorker = async ({ worker }: runWOpts): runWResult => {
     return new Promise((resolve) => {
+        worker.on('error', (error) => {
+            resolve({ errors: { [error.message]: error }, results: [] })
+            worker.terminate()
+        })
         worker.on('message', (results: any) => {
             resolve(results)
             worker.terminate()
@@ -101,6 +105,14 @@ const runOnFileChange = async ({ config, events }: runFOpts) => {
 
         const tests = await find({ globs: include })
         const worker = await createWorker({ config, tests })
+
+        worker.on('error', (error) => {
+            events.emit(RESULTS, {
+                errors: { [error.message]: error },
+                results: [],
+            })
+            state.running = false
+        })
 
         worker.on('message', (results: any) => {
             events.emit(RESULTS, results)
