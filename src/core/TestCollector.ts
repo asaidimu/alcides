@@ -3,7 +3,7 @@ import { invalidActionError } from '../Errors.js'
 import { TestFunction, TestCase } from './TestCase.js'
 import { TestSuite, TestHook } from './TestSuite.js'
 import { assert } from 'chai'
-import { GenericError } from './TestCaseRunner.js'
+import { TestError } from './TestCaseRunner.js'
 
 export interface TestCollectorInterface {
     suite: { (id: string, cb: () => void): void }
@@ -115,7 +115,7 @@ export const createTestSuiteCollector = (): any => {
 
 export interface TestCollectorResults {
     suites: Array<TestSuite>
-    errors: [GenericError]
+    errors: [TestError]
 }
 
 interface CollectOpts {
@@ -132,7 +132,7 @@ export const collect = async ({ tests }: CollectOpts): CollectResults => {
         await Promise.allSettled(tests.map((file) => import(file)))
     ).reduce((all: any, curr: any) => {
         if (curr.status == 'rejected') {
-            const error: GenericError = curr.reason
+            const error: TestError = curr.reason
             all.push(error)
         }
         return all

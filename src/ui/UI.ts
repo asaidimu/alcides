@@ -11,7 +11,7 @@ import {
 } from './Styles.js'
 import chalk from 'chalk'
 import { getTime } from './Utils.js'
-import { GenericError, TestResult } from '../core/TestCaseRunner.js'
+import { TestError, TestResult } from '../core/TestCaseRunner.js'
 import {
     TestRunnerOutput,
     TestRunnerOutputErrors,
@@ -45,7 +45,7 @@ const getRunTimeErrors = ({
 }): string =>
     Object.values(errors)
         .flat()
-        .map((error: GenericError) =>
+        .map((error: TestError) =>
             styleError({
                 indentation: '  ',
                 id: error.id || 'RuntimeError',

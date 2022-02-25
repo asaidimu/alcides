@@ -5,7 +5,7 @@ import { TestHook } from './TestSuite.js'
 
 import { setTimeout } from 'timers/promises'
 
-export interface GenericError extends Error {
+export interface TestError extends Error {
     id?: string
     code?: string
     stack?: string
@@ -17,7 +17,7 @@ export interface GenericError extends Error {
 }
 
 /** @deprecated */
-export interface CodedError extends GenericError {}
+export interface CodedError extends TestError {}
 
 export interface TestResult {
     id: string
@@ -63,7 +63,7 @@ export const runTestCase = async (opts: runOpts): runResults => {
         passed: false,
     }
 
-    let error: GenericError | null = null
+    let error: TestError | null = null
 
     const state = await hooks[SETUP_HOOK]()
 

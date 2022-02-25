@@ -1,7 +1,7 @@
 import { SourceMapConsumer } from 'source-map'
 import { readFile } from 'fs/promises'
 import path from 'path'
-import { GenericError } from './TestCaseRunner.js'
+import { TestError } from './TestCaseRunner.js'
 
 export interface SourcePosition {
     source: string
@@ -66,9 +66,7 @@ export const positionFromStackFrame = ({
     return getPosition(split)
 }
 
-export const setPosition = async (
-    error: GenericError
-): Promise<GenericError> => {
+export const setPosition = async (error: TestError): Promise<TestError> => {
     const frames = error.stack?.split('\n')
 
     const position = positionFromStackFrame({

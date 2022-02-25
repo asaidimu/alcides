@@ -2,24 +2,26 @@ import { parentPort, workerData } from 'worker_threads'
 import runTestSuite, { TestSuiteResults } from './TestSuiteRunner.js'
 import { RUN } from './Constants.js'
 import { collect } from './TestCollector.js'
-import { GenericError } from './TestCaseRunner.js'
+import { TestError } from './TestCaseRunner.js'
 import { createTestRunnerOutput, TestRunnerOutput } from './TestRunner.js'
 import { setPosition } from './Utils.js'
 
-const copyError = (error: GenericError): GenericError => {
-    return {
-        message: error.message,
-        name: error.name,
-        stack: error.stack,
-        id: error.id,
-        code: error.code,
-        position: error.position,
-    }
-}
+export const copyError = (error: TestError): TestError =>
+    <TestError>(
+        Object.fromEntries(
+            Object.entries(Object.getOwnPropertyDescriptors(error)).map(
+                ([key, value]) => [key, value.value]
+            )
+        )
+    )
 
-const serializeOutPutErrors = (output: TestRunnerOutput): TestRunnerOutput => {
+export const serializeOutPutErrors = ({
+    output,
+}: {
+    output: TestRunnerOutput
+}): TestRunnerOutput => {
     const errors = Object.entries(output.errors).map(
-        ([key, value]: [string, Array<GenericError>]) => {
+        ([key, value]: [string, Array<TestError>]) => {
             return [key, value.map(copyError)]
         }
     )
@@ -28,12 +30,12 @@ const serializeOutPutErrors = (output: TestRunnerOutput): TestRunnerOutput => {
     return output
 }
 
-const positionErrors = async (input: {
-    [key: string]: Array<GenericError>
+export const positionErrors = async (input: {
+    [key: string]: Array<TestError>
 }): Promise<any> => {
     const errors = await Promise.all(
         Object.entries(input).map(
-            async ([key, value]: [string, Array<GenericError>]) => {
+            async ([key, value]: [string, Array<TestError>]) => {
                 return [key, await Promise.all(value.map(setPosition))]
             }
         )
@@ -41,12 +43,12 @@ const positionErrors = async (input: {
     return Object.fromEntries(errors)
 }
 
-const prepareOutPut = async ({
+const aggregateOutPut = async ({
     results,
     errors,
 }: {
     results: Array<TestSuiteResults>
-    errors: Array<GenericError>
+    errors: Array<TestError>
 }): Promise<TestRunnerOutput> => {
     let output: TestRunnerOutput = createTestRunnerOutput()
     output.errors.load = errors
@@ -55,7 +57,7 @@ const prepareOutPut = async ({
         all.results[curr.id] = curr.results
 
         Object.entries(curr.errors).forEach(
-            ([key, value]: [string, Array<GenericError>]) => {
+            ([key, value]: [string, Array<TestError>]) => {
                 if (Array.isArray(all.errors[key])) {
                     all.errors[key] = all.errors[key].concat(value)
                 } else {
@@ -69,7 +71,7 @@ const prepareOutPut = async ({
 
     output.errors = await positionErrors(output.errors)
 
-    return serializeOutPutErrors(output)
+    return serializeOutPutErrors({ output })
 }
 const main = async () => {
     const { config, tests } = workerData
@@ -80,7 +82,7 @@ const main = async () => {
         timeout: config.timeout,
     })
 
-    parentPort?.postMessage(await prepareOutPut({ errors, results }))
+    parentPort?.postMessage(await aggregateOutPut({ errors, results }))
 }
 
 parentPort!.on('message', (msg) => {
