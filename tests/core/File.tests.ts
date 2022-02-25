@@ -43,11 +43,12 @@ suite('File', () => {
 
     test('Glob can find files.', async () => {
         const paths = [
-            'tests/fixtures/gl../../src/*.js',
+            'tests/fixtures/glob/src/**/*.js',
             'tests/fixtures/glob/*.js',
         ]
         const files = [
-            'tests/fixtures/gl../../src/example.js',
+            'tests/fixtures/glob/src/example.js',
+            'tests/fixtures/glob/src/core/example.js',
             'tests/fixtures/glob/example.js',
         ]
         const found = await glob(paths)
