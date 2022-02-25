@@ -1,16 +1,6 @@
 import { getConfigFile, readConfig } from './File.js'
 import getArguments from './Arguments.js'
 
-export interface Config {
-    verbose: boolean
-    include: string | Array<string>
-    timeout: number
-    workers: number
-    parallel: boolean
-    watch: boolean
-    files: []
-}
-
 const defaultConfig: Config = {
     include: ['tests/**/*.js', 'test/**/*.js'],
     workers: 0,

@@ -1,4 +1,3 @@
-import { Config } from '../src/config/Config.js'
 import { readConfig } from '../src/config/File.js'
 
 suite('Config', () => {

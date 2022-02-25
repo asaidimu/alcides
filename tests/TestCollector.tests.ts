@@ -1,9 +1,5 @@
 import { find } from '../src/core/File.js'
-import {
-    collect,
-    createTestSuiteCollector,
-    TestCollectorResults,
-} from '../src/core/TestCollector.js'
+import { collect, createTestSuiteCollector } from '../src/core/TestCollector.js'
 
 suite('TestCollector', () => {
     test('Collector methods can build TestSuite', async () => {

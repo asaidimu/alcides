@@ -1,8 +1,4 @@
-import {
-    getSourcePosition,
-    SourcePosition,
-    positionFromStackFrame,
-} from '../src/core/Utils.js'
+import { getSourcePosition, positionFromStackFrame } from '../src/core/Utils.js'
 
 suite('Utils', () => {
     test('Get original file position', async () => {

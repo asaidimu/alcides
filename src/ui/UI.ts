@@ -1,4 +1,3 @@
-import { Config } from '../config/Config.js'
 import EventEmitter from 'events'
 import { RESULTS, STARTED } from '../core/Constants.js'
 import ora from 'ora'
@@ -11,12 +10,6 @@ import {
 } from './Styles.js'
 import chalk from 'chalk'
 import { getTime } from './Utils.js'
-import { TestError, TestResult } from '../core/TestCaseRunner.js'
-import {
-    TestRunnerOutput,
-    TestRunnerOutputErrors,
-    TestRunnerOutputResults,
-} from '../core/TestRunner.js'
 
 function getSummary({ results }: { results: TestRunnerOutputResults }): string {
     interface Params {

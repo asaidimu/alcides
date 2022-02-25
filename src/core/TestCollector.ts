@@ -1,23 +1,7 @@
 import { SETUP_HOOK, TEARDOWN_HOOK } from './Constants.js'
 import { invalidActionError } from '../Errors.js'
-import { TestFunction, TestCase } from './TestCase.js'
-import { TestSuite, TestHook } from './TestSuite.js'
 import { assert } from 'chai'
-import { TestError } from './TestCaseRunner.js'
 
-export interface TestCollectorInterface {
-    suite: { (id: string, cb: () => void): void }
-    test: { (id: string, cb: TestFunction): void }
-    setUp: { (cb: () => any | Promise<any>): void }
-    tearDown: { (cb: (state?: any) => void | Promise<void>): void }
-}
-
-export interface TestSuiteCreator {
-    addTest: (id: string, testFunction: TestFunction) => void
-    addHook: (id: string, fun: TestHook) => void
-    getTestSuite: () => TestSuite
-    id: string
-}
 export const initTestSuite = (id: string): TestSuiteCreator => {
     const tests: TestCase[] = []
     const hooks: { [key: string]: TestHook } = {
@@ -41,10 +25,10 @@ export const initTestSuite = (id: string): TestSuiteCreator => {
             fun.id = id
             hooks[id] = fun
         },
-        addTest(id: string, testFunction: TestFunction) {
+        addTest(id: string, testCase: TestFunction) {
             tests.push({
                 id,
-                testFunction,
+                testCase,
             })
         },
         get id() {
@@ -111,11 +95,6 @@ export const createTestSuiteCollector = (): any => {
             return suites
         },
     ]
-}
-
-export interface TestCollectorResults {
-    suites: Array<TestSuite>
-    errors: [TestError]
 }
 
 interface CollectOpts {

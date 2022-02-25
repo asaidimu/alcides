@@ -1,14 +1,6 @@
 import { SourceMapConsumer } from 'source-map'
 import { readFile } from 'fs/promises'
 import path from 'path'
-import { TestError } from './TestCaseRunner.js'
-
-export interface SourcePosition {
-    source: string
-    column: number
-    line: number
-    name?: any
-}
 
 export const getSourcePosition = async ({
     source,

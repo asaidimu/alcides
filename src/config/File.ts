@@ -2,7 +2,6 @@ import { createRequire } from 'module'
 import { access } from 'fs/promises'
 import { constants } from 'fs'
 import path from 'path'
-import { Config } from './Config.js'
 
 export const getConfigFile = async (): Promise<string | void> => {
     const paths: Array<string> = [

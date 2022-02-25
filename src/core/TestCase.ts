@@ -1,8 +1,92 @@
-export interface TestCase {
-    id: string
-    testFunction: TestFunction
+import { timeoutError } from '../Errors.js'
+import { SETUP_HOOK, TEARDOWN_HOOK, TIMEOUT } from './Constants.js'
+import { setTimeout } from 'timers/promises'
+
+interface TestDecoratorParams {
+    testCase: { (args: any): any | Promise<any> }
+    timeout?: number
+    hooks?: { [key: string]: TestHook }
 }
 
-export interface TestFunction {
-    (state?: any): void | Promise<void>
+interface DecoratedFunction {
+    (args?: any): Promise<any | void>
+}
+
+interface TimerResults {
+    duration: number
+}
+
+interface ErrorHandlerResults {
+    error: TestError | null
+}
+
+export const withTimeOut = ({
+    testCase,
+    timeout,
+}: TestDecoratorParams): DecoratedFunction =>
+    async function (...args): Promise<any> {
+        const ac = new AbortController()
+
+        const res = await Promise.race([
+            testCase(...args),
+            setTimeout(timeout, TIMEOUT, {
+                signal: ac.signal,
+                ref: false,
+            }),
+        ])
+
+        ac.abort()
+
+        if (res == TIMEOUT) {
+            throw timeoutError()
+        }
+
+        return res
+    }
+
+export const withTimer = ({
+    testCase,
+}: TestDecoratorParams): DecoratedFunction =>
+    async function (...args): Promise<TimerResults & Object> {
+        let duration = performance.now()
+        const results = await testCase(...args)
+        duration = performance.now() - duration
+        return Object.assign({ duration }, results)
+    }
+
+export const withErrorHandler = ({
+    testCase,
+}: TestDecoratorParams): DecoratedFunction =>
+    async function (...args): Promise<ErrorHandlerResults & Object> {
+        let error = null
+        let results: any
+        try {
+            results = await testCase(...args)
+        } catch (e: any) {
+            error = e instanceof Error ? e : new Error(e)
+        }
+
+        return Object.assign({ error }, results)
+    }
+
+export const withBeforeAndAfterHooks = ({
+    testCase,
+    hooks,
+}: TestDecoratorParams): DecoratedFunction =>
+    async function (): Promise<any> {
+        const state = await hooks![SETUP_HOOK]()
+        const results = await testCase(state)
+        await hooks![TEARDOWN_HOOK](state)
+        return results
+    }
+
+export const decorateTestFunction = ({
+    testCase,
+    timeout,
+    hooks,
+}: TestDecoratorParams): DecoratedFunction => {
+    const timed = withTimer({ testCase })
+    const limited = withTimeOut({ testCase: timed, timeout })
+    const handled = withErrorHandler({ testCase: limited })
+    return withBeforeAndAfterHooks({ testCase: handled, hooks })
 }

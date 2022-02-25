@@ -1,9 +1,8 @@
 import { parentPort, workerData } from 'worker_threads'
-import runTestSuite, { TestSuiteResults } from './TestSuiteRunner.js'
+import runTestSuite from './TestSuiteRunner.js'
 import { RUN } from './Constants.js'
 import { collect } from './TestCollector.js'
-import { TestError } from './TestCaseRunner.js'
-import { createTestRunnerOutput, TestRunnerOutput } from './TestRunner.js'
+import { createTestRunnerOutput } from './TestRunner.js'
 import { setPosition } from './Utils.js'
 
 export const copyError = (error: TestError): TestError =>
