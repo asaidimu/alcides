@@ -1,4 +1,7 @@
-import { getSourcePosition, positionFromStackFrame } from '../src/core/Utils.js'
+import {
+    getSourcePosition,
+    positionFromStackFrame,
+} from '../../src/core/Utils.js'
 
 suite('Utils', () => {
     test('Get original file position', async () => {
@@ -22,17 +25,17 @@ suite('Utils', () => {
     test('Get position from stack frame', async () => {
         const frames = [
             [
-                'at positionFromStackFrame.<anonymous>(file:///home/projects/alcides/dist/src/core/Utils.js:23:10)',
+                'at positionFromStackFrame.<anonymous>(file:///home/projects/alcides/di../../src/core/Utils.js:23:10)',
                 {
-                    source: '/home/projects/alcides/dist/src/core/Utils.js',
+                    source: '/home/projects/alcides/di../../src/core/Utils.js',
                     line: 23,
                     column: 10,
                 },
             ],
             [
-                'at positionFromStackFrame (file:///home/projects/alcides/dist/src/core/Utils.js:23:10)',
+                'at positionFromStackFrame (file:///home/projects/alcides/di../../src/core/Utils.js:23:10)',
                 {
-                    source: '/home/projects/alcides/dist/src/core/Utils.js',
+                    source: '/home/projects/alcides/di../../src/core/Utils.js',
                     line: 23,
                     column: 10,
                 },

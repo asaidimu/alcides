@@ -1,6 +1,6 @@
 import { mkdir, rm, writeFile } from 'fs/promises'
 import EventEmitter from 'events'
-import { find, watch } from '../src/core/File.js'
+import { find, watch } from '../../src/core/File.js'
 import glob from 'fast-glob'
 
 suite('File', () => {
@@ -43,11 +43,11 @@ suite('File', () => {
 
     test('Glob can find files.', async () => {
         const paths = [
-            'tests/fixtures/glob/src/*.js',
+            'tests/fixtures/gl../../src/*.js',
             'tests/fixtures/glob/*.js',
         ]
         const files = [
-            'tests/fixtures/glob/src/example.js',
+            'tests/fixtures/gl../../src/example.js',
             'tests/fixtures/glob/example.js',
         ]
         const found = await glob(paths)

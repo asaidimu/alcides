@@ -1,4 +1,4 @@
-import { readConfig } from '../src/config/File.js'
+import { readConfig } from '../../src/config/File.js'
 
 suite('Config', () => {
     test('Configs are loaded from a file.', async () => {

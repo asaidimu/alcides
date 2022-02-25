@@ -1,4 +1,4 @@
-import runTests, { combineOutPut } from '../src/core/TestRunner.js'
+import runTests, { combineOutPut } from '../../src/core/TestRunner.js'
 
 suite('Test Runner', () => {
     interface State {

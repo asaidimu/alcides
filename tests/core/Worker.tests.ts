@@ -1,4 +1,4 @@
-import { copyError } from '../src/core/Worker.js'
+import { copyError } from '../../src/core/Worker.js'
 
 suite('Test Runner', () => {
     test('Test Copy Error', () => {

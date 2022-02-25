@@ -2,12 +2,12 @@ import {
     invalidActionError,
     timeoutError,
     unknownSymbolError,
-} from '../src/core/Errors.js'
+} from '../../src/core/Errors.js'
 import {
     ERR_INVALID_ACTION,
     ERR_TEST_TIMEOUT,
     ERR_UNKNOWN_SYMBOL,
-} from '../src/core/Constants.js'
+} from '../../src/core/Constants.js'
 
 suite('Errors', () => {
     test('Time out errors are coded', () => {

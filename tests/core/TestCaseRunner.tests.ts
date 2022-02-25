@@ -1,5 +1,5 @@
-import { SETUP_HOOK, TEARDOWN_HOOK } from '../src/core/Constants.js'
-import { runTestCase } from '../src/core/TestCaseRunner.js'
+import { SETUP_HOOK, TEARDOWN_HOOK } from '../../src/core/Constants.js'
+import { runTestCase } from '../../src/core/TestCaseRunner.js'
 
 suite('TestCaseRunner', () => {
     interface State {

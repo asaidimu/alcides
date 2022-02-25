@@ -1,6 +1,6 @@
-import { SETUP_HOOK, TEARDOWN_HOOK } from '../src/core/Constants.js'
-import { createTestSuiteCollector } from '../src/core/TestCollector.js'
-import runTestSuite from '../src/core/TestSuiteRunner.js'
+import { SETUP_HOOK, TEARDOWN_HOOK } from '../../src/core/Constants.js'
+import { createTestSuiteCollector } from '../../src/core/TestCollector.js'
+import runTestSuite from '../../src/core/TestSuiteRunner.js'
 
 suite('TestSuiteRunner', () => {
     setUp((): any => {
