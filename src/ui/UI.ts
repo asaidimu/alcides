@@ -1,4 +1,4 @@
-import { Config } from '../Config.js'
+import { Config } from '../config/Config.js'
 import EventEmitter from 'events'
 import { RESULTS, STARTED } from '../core/Constants.js'
 import ora from 'ora'

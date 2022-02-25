@@ -1,5 +1,5 @@
 import path from 'path'
-import { Config } from '../Config.js'
+import { Config } from '../config/Config.js'
 import { Worker } from 'worker_threads'
 import { RUN, STARTED } from './Constants.js'
 import { find, watch } from './File.js'
@@ -22,7 +22,7 @@ export interface TestRunnerOutput {
     [key: string]: any
     results: TestRunnerOutputResults
     errors: TestRunnerOutputErrors
-    hasErrors?: { (): boolean }
+    hasErrors?: boolean
 }
 
 export const createTestRunnerOutput = (): TestRunnerOutput => ({
@@ -139,17 +139,11 @@ export const runTests = async ({
         })
     )
 
+    results.push(createTestRunnerOutput())
     const output = combineOutPut(results)
 
-    output.hasErrors = (() => {
-        const o: TestRunnerOutput = <TestRunnerOutput>this!
+    output.hasErrors = Object.values(output.errors).flat().length > 0
 
-        for (const errors of Object.values(o.errors)) {
-            if (errors.length > 0) return true
-        }
-
-        return false
-    }).bind(output)
     return output
 }
 
