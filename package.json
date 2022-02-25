@@ -6,7 +6,8 @@
     "type": "module",
     "scripts": {
         "ci": "yarn install --frozen-lockfile",
-        "debug": "node --inspect-brk ./dist/index.js",
+        "debug": "node --inspect-brk ./dist/index.js --no-watch",
+        "debug:loop": "while true; do yarn debug; done",
         "clean": "rm -rf dist",
         "prebuild": "yarn clean",
         "build": "yarn tsc",
