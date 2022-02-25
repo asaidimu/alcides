@@ -11,7 +11,7 @@ suite('File.', () => {
                 (_, i: number) =>
                     `${process.cwd()}/tests/fixtures/tests/${i + 1}.test.js`
             )
-        const testGlobs = ['tests/fixtures/tests/**/*.test.js']
+        const testGlobs = ['tests/fixtures/tests/**/*.test.js', '']
 
         const found = await find({ globs: testGlobs })
         assert.deepEqual(expected, found)

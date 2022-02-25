@@ -25,7 +25,8 @@ export const watch = async ({ file, events, onChange }: watchOptions) => {
 }
 
 export const find = async ({ globs }: { globs: string | Array<string> }) => {
-    const paths = await glob(globs)
+    const all = Array.isArray(globs) ? globs : [globs]
+    const paths = await glob(all.filter((i: string) => i.length > 0))
 
     return paths.map((name) => path.format({ base: name, dir: process.cwd() }))
 }
