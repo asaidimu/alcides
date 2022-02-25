@@ -1,4 +1,4 @@
-import runTests, { combineOutPut } from '../../src/core/TestRunner.js'
+import runTests from '../../src/core/TestRunner.js'
 
 suite('Test Runner', () => {
     interface State {
@@ -48,24 +48,5 @@ suite('Test Runner', () => {
         const passed = getPassed(output.results)
         assert.equal(output!.errors.load.length, 1) // test 3 fails to load
         assert.equal(passed, 8) // 8 of 9 run
-    })
-
-    test('Test output combination.', () => {
-        const outputs: Array<TestRunnerOutput> = [
-            {
-                results: { A: [] },
-                errors: { test: [], hook: [], load: [] },
-            },
-            { results: { B: [] }, errors: { test: [], hook: [], load: [] } },
-        ]
-
-        const output = combineOutPut(outputs)
-        assert.deepEqual(
-            {
-                results: { A: [], B: [] },
-                errors: { test: [], hook: [], load: [] },
-            },
-            output
-        )
     })
 })

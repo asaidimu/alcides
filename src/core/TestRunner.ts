@@ -4,38 +4,7 @@ import { RUN, STARTED } from './Constants.js'
 import { find, watch } from './File.js'
 import { RESULTS } from './Constants.js'
 import EventEmitter from 'events'
-
-export const createTestRunnerOutput = (): TestRunnerOutput => ({
-    results: {},
-    errors: {
-        test: [],
-        hook: [],
-        load: [],
-    },
-})
-
-export const combineOutPut = (
-    output: Array<TestRunnerOutput>
-): TestRunnerOutput => {
-    const combineObjectEntries = (
-        all: TestRunnerOutput,
-        [key, value]: [string, Array<any>]
-    ) => {
-        if (Array.isArray(all[key])) all[key] = all[key].concat(value)
-        else all[key] = value
-        return all
-    }
-
-    const reducer = (all: TestRunnerOutput, curr: TestRunnerOutput) => {
-        return Object.entries(all).reduce((a, [key, value]: [string, any]) => {
-            const entries: any = [value, curr[key]].map(Object.entries).flat()
-            a[key] = entries.reduce(combineObjectEntries, {})
-            return a
-        }, <TestRunnerOutput>{})
-    }
-
-    return output.reduce(reducer)
-}
+import { combineOutPut, createTestRunnerOutput } from './Results.js'
 
 const workerPath: string = ((): string => {
     const url = import.meta.url
