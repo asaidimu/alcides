@@ -21,7 +21,7 @@ suite('TestCollector.', () => {
 
         const testSuite = suites[0]
 
-        assert.deepEqual('TestSuite', testSuite.description)
+        assert.deepEqual('TestSuite', testSuite.id)
         assert.equal(1, testSuite.tests.length)
     })
 

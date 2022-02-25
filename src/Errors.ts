@@ -1,14 +1,14 @@
 import chalk from 'chalk'
 import {
     ERR_INVALID_ACTION,
-    ERR_TEST_RUN_TIMEOUT,
+    ERR_TEST_TIMEOUT,
     ERR_UNKNOWN_SYMBOL,
     EXIT_INVALID_CONFIG,
 } from './Constants.js'
 
-export const timeoutError = (description: string) => {
-    const error: any = new Error(`TestCase '${String(description)}' timed out.`)
-    error.code = ERR_TEST_RUN_TIMEOUT
+export const timeoutError = () => {
+    const error: any = new Error(`Test timed out.`)
+    error.code = ERR_TEST_TIMEOUT
     return error
 }
 export const invalidActionError = (description: string) => {

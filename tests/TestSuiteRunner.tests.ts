@@ -48,8 +48,8 @@ suite('TestSuiteRunner', () => {
 
         const { results } = suiteResults[0]
 
-        assert.isNull(results.find((a) => a.description == case1)!.error)
-        assert.isNotNull(results.find((b) => b.description == case2)!.error)
+        assert.isTrue(results.find((i) => i.id == case1)?.passed)
+        assert.isFalse(results.find((i) => i.id == case2)?.passed)
     })
 
     test('Catch failing test fixtures.', async ({ getSuites, utils }: any) => {
@@ -74,8 +74,14 @@ suite('TestSuiteRunner', () => {
         })
 
         const { errors } = suiteResults[0]
-        assert.strictEqual(errors[SETUP_HOOK].message, setUpError)
-        assert.strictEqual(errors[TEARDOWN_HOOK].message, tearDownError)
+        assert.strictEqual(
+            errors.hook.find((e) => e.id == SETUP_HOOK)!.message,
+            setUpError
+        )
+        assert.strictEqual(
+            errors.hook.find((e) => e.id == TEARDOWN_HOOK)!.message,
+            tearDownError
+        )
     })
 
     test('Run multiple test suites.', async ({ getSuites, utils }: any) => {

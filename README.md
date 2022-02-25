@@ -161,7 +161,7 @@ const config: Config = {
     files: [],
 
     parallel: false,
-    workers: 2,
+    workers: 0,
 }
 ```
 

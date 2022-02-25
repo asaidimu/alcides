@@ -2,56 +2,85 @@ import { parentPort, workerData } from 'worker_threads'
 import runTestSuite, { TestSuiteResults } from './TestSuiteRunner.js'
 import { RUN } from './Constants.js'
 import { collect } from './TestCollector.js'
+import { GenericError } from './TestCaseRunner.js'
+import { createTestRunnerOutput, TestRunnerOutput } from './TestRunner.js'
+import { setPosition } from './Utils.js'
 
-const serializeError = (error: any): any => {
-    let result: any = error
-    if (error !== null) {
-        result = {
-            stack: error.stack,
-            name: error.name,
-            message: error.message,
-            code: error.code,
-        }
+const copyError = (error: GenericError): GenericError => {
+    return {
+        message: error.message,
+        name: error.name,
+        stack: error.stack,
+        id: error.id,
+        code: error.code,
+        position: error.position,
     }
-    return result
 }
 
-const serializeResultErrors = (
+const serializeOutPutErrors = (output: TestRunnerOutput): TestRunnerOutput => {
+    const errors = Object.entries(output.errors).map(
+        ([key, value]: [string, Array<GenericError>]) => {
+            return [key, value.map(copyError)]
+        }
+    )
+
+    output.errors = Object.fromEntries(errors)
+    return output
+}
+
+const positionErrors = async (input: {
+    [key: string]: Array<GenericError>
+}): Promise<any> => {
+    const errors = await Promise.all(
+        Object.entries(input).map(
+            async ([key, value]: [string, Array<GenericError>]) => {
+                return [key, await Promise.all(value.map(setPosition))]
+            }
+        )
+    )
+    return Object.fromEntries(errors)
+}
+
+const prepareOutPut = async ({
+    results,
+    errors,
+}: {
     results: Array<TestSuiteResults>
-): Array<TestSuiteResults> => {
-    /* Assertation errors from chai aren't cloned very well. */
-    const serialized = results.map((suiteResult) => {
-        const { results } = suiteResult
-        suiteResult.results = results.map((result) => {
-            const { error } = result
-            result.error = serializeError(error)
-            return result
-        })
-        return suiteResult
-    })
-    return serialized
-}
+    errors: Array<GenericError>
+}): Promise<TestRunnerOutput> => {
+    let output: TestRunnerOutput = createTestRunnerOutput()
+    output.errors.load = errors
 
-const serializeCollectErrors = (errors: any) => {
-    const results = Object.entries(errors).reduce((all: any, curr: any) => {
-        const [file, error] = curr
-        all[file] = serializeError(error)
+    output = results.reduce((all: TestRunnerOutput, curr: TestSuiteResults) => {
+        all.results[curr.id] = curr.results
+
+        Object.entries(curr.errors).forEach(
+            ([key, value]: [string, Array<GenericError>]) => {
+                if (Array.isArray(all.errors[key])) {
+                    all.errors[key] = all.errors[key].concat(value)
+                } else {
+                    all.errors[key] = value
+                }
+            }
+        )
+
         return all
-    }, {})
-    return results
+    }, output)
+
+    output.errors = await positionErrors(output.errors)
+
+    return serializeOutPutErrors(output)
 }
 const main = async () => {
     const { config, tests } = workerData
     const { suites, errors } = await collect({ tests })
-    const results = await runTestSuite({
+
+    const results: Array<TestSuiteResults> = await runTestSuite({
         suite: suites,
         timeout: config.timeout,
     })
 
-    parentPort?.postMessage({
-        errors: serializeCollectErrors(errors),
-        results: serializeResultErrors(results),
-    })
+    parentPort?.postMessage(await prepareOutPut({ errors, results }))
 }
 
 parentPort!.on('message', (msg) => {

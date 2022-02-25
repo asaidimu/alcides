@@ -9,7 +9,7 @@ export interface TearDownHook {
 }
 
 export interface TestSuite {
-    description: string
+    id: string
     tests: TestCase[]
     hooks: { [key: string]: TestHook }
 }

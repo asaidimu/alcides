@@ -11,6 +11,7 @@
         "prebuild": "yarn clean",
         "build": "yarn tsc",
         "test": "yarn --silent --offline alcides",
+        "test:next": "yarn --silent --offline node ./dist/index.js",
         "build:watch": "yarn tsc --watch",
         "build:docs": "yarn jsdoc -c jsdoc.json",
         "build:docs:watch": "nodemon --exec 'yarn build:docs' --watch src -q",

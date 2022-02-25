@@ -1,5 +1,5 @@
 export interface TestCase {
-    description: string
+    id: string
     testFunction: TestFunction
 }
 

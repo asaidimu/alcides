@@ -9,7 +9,7 @@ suite('TestCaseRunner', () => {
     setUp((): State => {
         return {
             fixture: {
-                description: 'Example',
+                id: 'Example',
                 hooks: {
                     [SETUP_HOOK]: () => {},
                     [TEARDOWN_HOOK]: () => {},
@@ -20,8 +20,8 @@ suite('TestCaseRunner', () => {
     })
 
     test('Can run a testCase', async ({ fixture }: State) => {
-        const result = await runTestCase({ timeout: 1000, fixture })
-        assert.isNull(result.error)
+        const [_, error] = await runTestCase({ timeout: 1000, fixture })
+        assert.isNull(error)
     })
 
     test('Catch a failing test case.', async ({ fixture }: State) => {
@@ -31,7 +31,7 @@ suite('TestCaseRunner', () => {
             throw new Error(err_msg)
         }
 
-        const { error } = await runTestCase({ timeout: 1000, fixture })
+        const [_, error] = await runTestCase({ timeout: 1000, fixture })
 
         assert.deepEqual(error!.message, err_msg)
     })
@@ -46,7 +46,7 @@ suite('TestCaseRunner', () => {
             assert.isFalse(result) // will throw an error
         }
 
-        const { error } = await runTestCase({ timeout: 1000, fixture })
+        const [_, error] = await runTestCase({ timeout: 1000, fixture })
 
         assert.isNotNull(error)
     })
@@ -58,7 +58,7 @@ suite('TestCaseRunner', () => {
             await new Promise((resolve) => setTimeout(resolve, waitTime))
         }
 
-        const { duration } = await runTestCase({ timeout: 1000, fixture })
+        const [{ duration }, _] = await runTestCase({ timeout: 1000, fixture })
 
         // could be at least 2ms late or early
         assert.isTrue(duration < waitTime + 2 || duration > waitTime - 2)
@@ -69,8 +69,8 @@ suite('TestCaseRunner', () => {
             await new Promise((resolve) => setTimeout(resolve, 200))
         }
 
-        const result = await runTestCase({ timeout: 50, fixture })
-        assert.isNotNull(result.error)
+        const [_, error] = await runTestCase({ timeout: 50, fixture })
+        assert.isNotNull(error)
     })
 
     test('Run tests with hooks.', async ({ fixture }: State) => {
@@ -95,7 +95,7 @@ suite('TestCaseRunner', () => {
 
     test('State is passed from setUp down.', async () => {
         const fixture: TestFixture = {
-            description: 'Example',
+            id: 'Example',
             hooks: {
                 [SETUP_HOOK]: () => ({ message: 'Hello, World!' }),
                 [TEARDOWN_HOOK]: (opts: any) => {
@@ -107,7 +107,7 @@ suite('TestCaseRunner', () => {
             },
         }
 
-        const result = await runTestCase({ timeout: 200, fixture })
-        assert.isNull(result.error)
+        const [_, error] = await runTestCase({ timeout: 200, fixture })
+        assert.isNull(error)
     })
 })

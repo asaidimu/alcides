@@ -3,21 +3,22 @@ import { invalidActionError } from '../Errors.js'
 import { TestFunction, TestCase } from './TestCase.js'
 import { TestSuite, TestHook } from './TestSuite.js'
 import { assert } from 'chai'
+import { GenericError } from './TestCaseRunner'
 
 export interface TestCollectorInterface {
-    suite: { (description: string, cb: () => void): void }
-    test: { (description: string, cb: TestFunction): void }
+    suite: { (id: string, cb: () => void): void }
+    test: { (id: string, cb: TestFunction): void }
     setUp: { (cb: () => any | Promise<any>): void }
     tearDown: { (cb: (state?: any) => void | Promise<void>): void }
 }
 
 export interface TestSuiteCreator {
-    addTest: (description: string, testFunction: TestFunction) => void
+    addTest: (id: string, testFunction: TestFunction) => void
     addHook: (id: string, fun: TestHook) => void
     getTestSuite: () => TestSuite
-    description: string
+    id: string
 }
-export const initTestSuite = (description: string): TestSuiteCreator => {
+export const initTestSuite = (id: string): TestSuiteCreator => {
     const tests: TestCase[] = []
     const hooks: { [key: string]: TestHook } = {
         [SETUP_HOOK]: () => {},
@@ -27,7 +28,7 @@ export const initTestSuite = (description: string): TestSuiteCreator => {
     return {
         getTestSuite(): TestSuite {
             return {
-                description,
+                id,
                 tests,
                 hooks,
             }
@@ -40,14 +41,14 @@ export const initTestSuite = (description: string): TestSuiteCreator => {
             fun.id = id
             hooks[id] = fun
         },
-        addTest(description: string, testFunction: TestFunction) {
+        addTest(id: string, testFunction: TestFunction) {
             tests.push({
-                description,
+                id,
                 testFunction,
             })
         },
-        get description() {
-            return description
+        get id() {
+            return id
         },
     }
 }
@@ -59,11 +60,11 @@ export const createTestSuiteCollector = (): any => {
 
     return [
         {
-            suite(description: string, fn: Function) {
+            suite(id: string, fn: Function) {
                 if (current !== null) {
                     stack.push(current)
                 }
-                current = initTestSuite(description)
+                current = initTestSuite(id)
 
                 fn()
 
@@ -76,11 +77,11 @@ export const createTestSuiteCollector = (): any => {
                     current = null
                 }
             },
-            test(description: string, testFunction: TestFunction) {
+            test(id: string, testFunction: TestFunction) {
                 if (current === null) {
                     throw invalidActionError('test()')
                 }
-                current.addTest(description, testFunction)
+                current.addTest(id, testFunction)
             },
             tearDown(fn: TestHook) {
                 if (current === null) {
@@ -114,7 +115,7 @@ export const createTestSuiteCollector = (): any => {
 
 export interface TestCollectorResults {
     suites: Array<TestSuite>
-    errors: { [key: string]: any }
+    errors: [GenericError]
 }
 
 interface CollectOpts {
@@ -129,10 +130,13 @@ export const collect = async ({ tests }: CollectOpts): CollectResults => {
 
     const errors = (
         await Promise.allSettled(tests.map((file) => import(file)))
-    ).reduce((all: any, curr: any, index: any) => {
-        if (curr.status == 'rejected') all[tests[index]] = curr.reason
+    ).reduce((all: any, curr: any) => {
+        if (curr.status == 'rejected') {
+            const error: GenericError = curr.reason
+            all.push(error)
+        }
         return all
-    }, {})
+    }, [])
 
     return { suites: getSuites(), errors }
 }

@@ -4,24 +4,20 @@ import fs from 'fs'
 import path from 'path'
 import { exitWithInvalidConfigError } from '../Errors.js'
 
-export const watch = async ({
-    file,
-    events,
-    onChange,
-}: {
+interface watchOptions {
     file: string | Array<string>
     events: EventEmitter
     onChange: () => any
-}) => {
+}
+export const watch = async ({ file, events, onChange }: watchOptions) => {
     const files = Array.isArray(file) ? file : [file]
 
     const ac = new AbortController()
-
     events.on('stop', (_) => ac.abort())
 
-    files.forEach((file) => {
+    files.forEach((f) => {
         try {
-            fs.watch(file, { signal: ac.signal }, onChange)
+            fs.watch(f, { signal: ac.signal }, onChange)
         } catch (e) {
             exitWithInvalidConfigError(e)
         }

@@ -1,13 +1,13 @@
 import chalk from 'chalk'
-import { ErrorPosition } from './Utils.js'
+import { SourcePosition } from '../core/Utils'
 const { bold } = chalk
 
 export const styleErrorPosition = ({
     source,
     line,
     column,
-}: ErrorPosition): string =>
-    `  ${bold.blue(source)}:${bold.blue(`${line}:${column}`)}`
+}: SourcePosition): string =>
+    `@ ${bold.blue(source)}:${bold.blue(`${line}:${column}`)}`
 
 export const styleTime = ({ indentation, time }: any): string =>
     `${indentation}${chalk.grey(time)}`
@@ -22,9 +22,9 @@ export const styleErrorStack = ({ indentation, stack }: any): string => {
         .join('\n')
 }
 
-export const styleError = ({ indentation, prefix, id, error }: any): string => {
-    id.length > 0 ? (id = `@  ${chalk.bold.green(id)}`) : ''
-    let result = `${indentation}${chalk.yellow(prefix)} ${id}`
+export const styleError = ({ indentation, id, error }: any): string => {
+    id.length > 0 ? (id = `${chalk.bold.green(id)}`) : ''
+    let result = `${indentation}${id}`
     if (error.stack) {
         result += `\n${indentation}${styleErrorPosition(error.position)}`
         result += `\n${styleErrorStack({ indentation, stack: error.stack })}`

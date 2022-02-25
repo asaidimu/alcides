@@ -5,14 +5,14 @@ import {
 } from '../src/Errors.js'
 import {
     ERR_INVALID_ACTION,
-    ERR_TEST_RUN_TIMEOUT,
+    ERR_TEST_TIMEOUT,
     ERR_UNKNOWN_SYMBOL,
 } from '../src/Constants.js'
 
 suite('Alcides Errors', () => {
     test('Time out errors are coded', () => {
-        const error = timeoutError('')
-        assert.deepEqual(ERR_TEST_RUN_TIMEOUT, error.code)
+        const error = timeoutError()
+        assert.deepEqual(ERR_TEST_TIMEOUT, error.code)
     })
 
     test('Invalid action errors are coded', () => {

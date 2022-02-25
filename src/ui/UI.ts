@@ -1,13 +1,7 @@
-import { TestRunnerResults } from '../core/TestRunner.js'
 import { Config } from '../Config.js'
 import EventEmitter from 'events'
 import { RESULTS, STARTED } from '../core/Constants.js'
 import ora from 'ora'
-import {
-    getOriginalPosition,
-    getTime,
-    reduceTestSuiteResults,
-} from './Utils.js'
 import {
     styleDescription,
     styleError,
@@ -15,121 +9,103 @@ import {
     styleTestStatus,
     styleTime,
 } from './Styles.js'
-import { CodedError } from '../core/TestCaseRunner.js'
 import chalk from 'chalk'
+import { getTime } from './Utils.js'
+import { GenericError, TestResult } from '../core/TestCaseRunner.js'
+import {
+    TestRunnerOutput,
+    TestRunnerOutputErrors,
+    TestRunnerOutputResults,
+} from '../core/TestRunner.js'
 
-interface reportOpts extends TestRunnerResults {
-    verbose: boolean
-}
+function getSummary({ results }: { results: TestRunnerOutputResults }): string {
+    interface Params {
+        indentation: string
+        passed: number
+        failed: number
+    }
 
-export const report = async ({ results, errors, verbose }: reportOpts) => {
-    const reduced = await reduceTestSuiteResults({ results })
-    const runTimeErrors = await Promise.all(
-        Object.entries(errors).map(async ([k, error]) => {
-            let err: CodedError = error
-            err.position = await getOriginalPosition(
-                error.stack!.split('\n')[1]
-            )
-            return [k, error]
-        })
-    )
-
-    const summary = styleSummary(
-        reduced.reduce(
-            (all, curr) => {
-                all.passed += curr.passed.length
-                all.failed += curr.failed.length
+    const params: Params = Object.values(results)
+        .flat()
+        .reduce(
+            (all: Params, curr: TestResult) => {
+                curr.passed ? all.passed++ : all.failed++
                 return all
             },
             { indentation: '  ', passed: 0, failed: 0 }
         )
-    )
 
-    const testStatus = reduced
-        .reduce((all, curr) => {
-            let result = [
-                styleDescription({
-                    indentation: '  ',
-                    description: curr.description,
-                }),
-            ]
+    return styleSummary(params)
+}
 
-            result = result.concat(
-                curr.passed.concat(curr.failed).map((i) =>
-                    styleTestStatus({
-                        indentation: '    ',
-                        passed: i.error === null,
-                        duration: i.duration,
-                        description: i.description,
-                    })
+const getRunTimeErrors = ({
+    errors,
+}: {
+    errors: TestRunnerOutputErrors
+}): string =>
+    Object.values(errors)
+        .flat()
+        .map((error: GenericError) =>
+            styleError({
+                indentation: '  ',
+                id: error.id || 'RuntimeError',
+                error,
+            })
+        )
+        .join('\n')
+
+const getStatus = ({ results }: { results: TestRunnerOutputResults }): string =>
+    Object.entries(results)
+        .reduce(
+            (
+                all: Array<string>,
+                [id, testResults]: [string, Array<TestResult>]
+            ) => {
+                let result = [
+                    styleDescription({
+                        indentation: '  ',
+                        description: id,
+                    }),
+                ]
+
+                result = result.concat(
+                    testResults
+                        .sort((r) => (r.passed ? -1 : 0))
+                        .map((r: TestResult) =>
+                            styleTestStatus({
+                                indentation: '    ',
+                                passed: r.passed,
+                                duration: r.duration,
+                                description: r.id,
+                            })
+                        )
                 )
-            )
 
-            all.push(result.join('\n'))
-            return all
-        }, <Array<string>>[])
+                all.push(result.join('\n'))
+                return all
+            },
+            <Array<string>>[]
+        )
         .join('\n\n')
 
-    const testErrors = reduced
-        .reduce((all, curr) => {
-            if (curr.failed.length === 0 && curr.errors.length === 0) return all
+export const report = async ({
+    results,
+    errors,
+    verbose,
+}: TestRunnerOutput & { verbose: boolean }) => {
+    const summary = getSummary({ results })
+    const runTimeErrors = getRunTimeErrors({ errors })
+    const status = getStatus({ results })
 
-            let result = [
-                styleDescription({
-                    indentation: ' ',
-                    description: curr.description,
-                }),
-            ]
-
-            result = result.concat(
-                curr.failed.map((i) => {
-                    return styleError({
-                        indentation: '  ',
-                        prefix: 'TestError',
-                        id: i.description,
-                        error: i.error,
-                    })
-                })
-            )
-
-            result = result.concat(
-                curr.errors.map((i) => {
-                    return styleError({
-                        indentation: '  ',
-                        prefix: 'TestError',
-                        id: i[0],
-                        error: i[1],
-                    })
-                })
-            )
-
-            all.push(result.join('\n'))
-            return all
-        }, <Array<string>>[])
-        .join('\n')
-
-    const runErrors = runTimeErrors
-        .map((i) => {
-            return styleError({
-                indentation: '  ',
-                prefix: 'RuntimeError',
-                id: '',
-                error: i[1],
-            })
-        })
-        .join('\n')
-
+    console.clear()
     console.log()
+
     if (verbose) {
-        console.log(testStatus, '\n')
+        console.log(status, '\n')
     }
 
-    if (testErrors.length > 0) {
-        console.log(testErrors, '\n')
-    }
-
-    if (runErrors.length > 0) {
-        console.log(runErrors, '\n')
+    if (runTimeErrors.length > 0) {
+        console.log(runTimeErrors, '\n')
     }
 
     console.log()
@@ -137,31 +113,45 @@ export const report = async ({ results, errors, verbose }: reportOpts) => {
     console.log(summary)
 }
 
-export const startUI = ({ config }: { config: Config }): EventEmitter => {
-    const events = new EventEmitter()
+const showSpinner = ({ events }: { events: EventEmitter }) => {
     const pause = () => new Promise((resolve) => setTimeout(resolve, 50))
 
     const spinner = ora('').start()
     spinner.prefixText = ' '
     spinner.spinner = 'point'
-
     spinner.start()
-    events.on(RESULTS, async (results: TestRunnerResults) => {
+
+    events.on('pauseSpinner', () => {
         spinner.stop()
-        console.clear()
-        report(Object.assign(results, { verbose: config.verbose }))
+    })
+
+    events.on('resumeSpinner', async () => {
         await pause()
         spinner.start()
     })
+}
+
+const waitForResults = () => {
+    console.clear()
+    console.log('\n')
+    console.log(styleTime({ time: getTime(), indentation: '  ' }))
+    console.log(chalk.grey('  Running...\n'))
+}
+
+export const startUI = ({ config }: { config: Config }): EventEmitter => {
+    const events = new EventEmitter()
+    showSpinner({ events })
 
     events.on(STARTED, async () => {
-        spinner.stop()
-        console.clear()
-        console.log('\n')
-        console.log(styleTime({ time: getTime(), indentation: '  ' }))
-        console.log(chalk.grey('  Running...\n'))
-        await pause()
-        spinner.start()
+        events.emit('pauseSpinner')
+        waitForResults()
+        events.emit('resumeSpinner')
+    })
+
+    events.on(RESULTS, async (results: TestRunnerOutput) => {
+        events.emit('pauseSpinner')
+        report(Object.assign(results, { verbose: config.verbose }))
+        events.emit('resumeSpinner')
     })
 
     return events

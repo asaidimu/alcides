@@ -76,7 +76,7 @@ const getArgv = (): Arguments => {
 
 const config: Config = {
     include: ['tests/**/*.js', 'test/**/*.js'],
-    workers: 2,
+    workers: 0,
     timeout: 1000,
     parallel: false,
     watch: false,
