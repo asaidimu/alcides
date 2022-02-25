@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import { SourcePosition } from '../core/Utils'
+import { SourcePosition } from '../core/Utils.js'
 const { bold } = chalk
 
 export const styleErrorPosition = ({

@@ -3,7 +3,7 @@ import { invalidActionError } from '../Errors.js'
 import { TestFunction, TestCase } from './TestCase.js'
 import { TestSuite, TestHook } from './TestSuite.js'
 import { assert } from 'chai'
-import { GenericError } from './TestCaseRunner'
+import { GenericError } from './TestCaseRunner.js'
 
 export interface TestCollectorInterface {
     suite: { (id: string, cb: () => void): void }

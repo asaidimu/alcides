@@ -5,7 +5,7 @@ import { RUN, STARTED } from './Constants.js'
 import { find, watch } from './File.js'
 import { RESULTS } from './Constants.js'
 import EventEmitter from 'events'
-import { GenericError, TestResult } from './TestCaseRunner'
+import { GenericError, TestResult } from './TestCaseRunner.js'
 
 export interface TestRunnerOutputResults {
     [key: string]: Array<TestResult> // collection of all test results sorted by suite.
