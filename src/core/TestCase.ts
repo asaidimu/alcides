@@ -1,4 +1,4 @@
-import { timeoutError } from '../Errors.js'
+import { timeoutError } from './Errors.js'
 import { SETUP_HOOK, TEARDOWN_HOOK, TIMEOUT } from './Constants.js'
 import { setTimeout } from 'timers/promises'
 

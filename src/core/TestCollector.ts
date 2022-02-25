@@ -1,5 +1,5 @@
 import { SETUP_HOOK, TEARDOWN_HOOK } from './Constants.js'
-import { invalidActionError } from '../Errors.js'
+import { invalidActionError } from './Errors.js'
 import { assert } from 'chai'
 
 export const initTestSuite = (id: string): TestSuiteCreator => {

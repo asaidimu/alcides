@@ -2,7 +2,7 @@ import EventEmitter from 'events'
 import glob from 'fast-glob'
 import fs from 'fs'
 import path from 'path'
-import { exitWithInvalidConfigError } from '../Errors.js'
+import { exitWithInvalidConfigError } from './Errors.js'
 
 interface watchOptions {
     file: string | Array<string>
