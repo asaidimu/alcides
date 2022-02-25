@@ -1,3 +1,11 @@
+## [1.4.6](https://github.com/asaidimu/alcides/compare/v1.4.5...v1.4.6) (2022-02-22)
+
+
+### Bug Fixes
+
+* catch errors that occur in workers. ([6969044](https://github.com/asaidimu/alcides/commit/6969044e9a82832ee3ad2cb81683435536944d36))
+* render ui as strings ([e86a78d](https://github.com/asaidimu/alcides/commit/e86a78da58a18db98590f72a5098dc0eefdc78fc))
+
 ## [1.4.5](https://github.com/asaidimu/alcides/compare/v1.4.4...v1.4.5) (2022-02-21)
 
 
