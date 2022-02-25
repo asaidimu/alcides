@@ -1,9 +1,9 @@
 import {
     getSourcePosition,
     positionFromStackFrame,
-} from '../../src/core/Utils.js'
+} from '../../src/core/SourceMap.js'
 
-suite('Utils', () => {
+suite('SourceMap', () => {
     test('Get original file position', async () => {
         const position: SourcePosition = await getSourcePosition({
             source: 'tests/fixtures/map/test.js',

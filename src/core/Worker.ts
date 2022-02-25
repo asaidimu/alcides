@@ -3,7 +3,7 @@ import runTestSuite from './TestSuiteRunner.js'
 import { RUN } from './Constants.js'
 import { collect } from './TestCollector.js'
 import { createTestRunnerOutput } from './TestRunner.js'
-import { setPosition } from './Utils.js'
+import { setPosition } from './SourceMap.js'
 
 export const copyError = (error: TestError): TestError =>
     <TestError>(
