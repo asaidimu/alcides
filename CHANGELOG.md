@@ -1,3 +1,11 @@
+## [1.4.8](https://github.com/asaidimu/alcides/compare/v1.4.7...v1.4.8) (2022-02-25)
+
+
+### Bug Fixes
+
+* add all props to error ([60dbbb9](https://github.com/asaidimu/alcides/commit/60dbbb9899207dab86f34fd66f2f7a096fa79e00))
+* correct incorrect setting of stack frame info ([ec764d4](https://github.com/asaidimu/alcides/commit/ec764d4dd8a33ade67452d2066fb7deb0ecec8ff))
+
 ## [1.4.7](https://github.com/asaidimu/alcides/compare/v1.4.6...v1.4.7) (2022-02-25)
 
 
