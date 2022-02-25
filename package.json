@@ -16,7 +16,7 @@
         "build:docs": "yarn jsdoc -c jsdoc.json",
         "build:docs:watch": "nodemon --exec 'yarn build:docs' --watch src -q",
         "pretest:ci": "yarn build",
-        "test:ci": "yarn alcides --no-watch --parallel",
+        "test:ci": "yarn alcides --no-watch --parallel -r 3 --verbose",
         "test:push": "yarn build:dist && yarn test --no-watch --parallel && cd ./dist && npm publish --dry-run $PWD && cd ../ && yarn semantic-release",
         "build:dist": "./bin/dist.sh",
         "build:next": "./bin/next.sh",

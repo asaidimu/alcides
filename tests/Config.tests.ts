@@ -1,7 +1,7 @@
 import { Config } from '../src/config/Config.js'
 import { readConfig } from '../src/config/File.js'
 
-suite('Alcides Config', () => {
+suite('Config', () => {
     test('Configs are loaded from a file.', async () => {
         const files = ['alcides.config.js', 'alcides.json']
 

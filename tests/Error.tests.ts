@@ -9,7 +9,7 @@ import {
     ERR_UNKNOWN_SYMBOL,
 } from '../src/Constants.js'
 
-suite('Alcides Errors', () => {
+suite('Errors', () => {
     test('Time out errors are coded', () => {
         const error = timeoutError()
         assert.deepEqual(ERR_TEST_TIMEOUT, error.code)

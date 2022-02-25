@@ -4,7 +4,7 @@ import {
     positionFromStackFrame,
 } from '../src/core/Utils.js'
 
-suite('Alcides Utils', () => {
+suite('Utils', () => {
     test('Get original file position', async () => {
         const position: SourcePosition = await getSourcePosition({
             source: 'tests/fixtures/map/test.js',

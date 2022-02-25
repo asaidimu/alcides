@@ -5,7 +5,7 @@ import {
     TestCollectorResults,
 } from '../src/core/TestCollector.js'
 
-suite('TestCollector.', () => {
+suite('TestCollector', () => {
     test('Collector methods can build TestSuite', async () => {
         const [utils, getSuites] = createTestSuiteCollector()
         const { suite, setUp, test, tearDown } = utils

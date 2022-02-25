@@ -3,7 +3,7 @@ import EventEmitter from 'events'
 import { find, watch } from '../src/core/File.js'
 import glob from 'fast-glob'
 
-suite('File.', () => {
+suite('File', () => {
     test('Can obtain tests.', async () => {
         const expected = Array(9)
             .fill('')

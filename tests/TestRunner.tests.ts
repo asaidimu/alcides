@@ -5,7 +5,7 @@ import runTests, {
 import { Config } from '../src/config/Config.js'
 import { TestResult } from '../src/core/TestCaseRunner.js'
 
-suite('Alcides Test Runner', () => {
+suite('Test Runner', () => {
     interface State {
         config: Config
         getPassed: { (a: any): number }
