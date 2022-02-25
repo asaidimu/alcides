@@ -1,3 +1,11 @@
+## [1.4.7](https://github.com/asaidimu/alcides/compare/v1.4.6...v1.4.7) (2022-02-25)
+
+
+### Bug Fixes
+
+* changed default options ([1982e94](https://github.com/asaidimu/alcides/commit/1982e94aacb81c32ada67f542f215de91419387b))
+* remedy fast glob fail on empty strings ([fa3421f](https://github.com/asaidimu/alcides/commit/fa3421fa7ef5e6dd29f5980799b262ecf7968cc2))
+
 ## [1.4.6](https://github.com/asaidimu/alcides/compare/v1.4.5...v1.4.6) (2022-02-22)
 
 
