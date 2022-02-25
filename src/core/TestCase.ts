@@ -6,6 +6,7 @@ interface TestDecoratorParams {
     testCase: { (args: any): any | Promise<any> }
     timeout?: number
     hooks?: { [key: string]: TestHook }
+    id?: string
 }
 
 interface DecoratedFunction {
@@ -23,8 +24,8 @@ interface ErrorHandlerResults {
 export const withTimeOut = ({
     testCase,
     timeout,
-}: TestDecoratorParams): DecoratedFunction =>
-    async function (...args): Promise<any> {
+}: TestDecoratorParams): DecoratedFunction => {
+    return async function (...args): Promise<any> {
         const ac = new AbortController()
 
         const res = await Promise.race([
@@ -43,42 +44,48 @@ export const withTimeOut = ({
 
         return res
     }
+}
 
 export const withTimer = ({
     testCase,
-}: TestDecoratorParams): DecoratedFunction =>
-    async function (...args): Promise<TimerResults & Object> {
+}: TestDecoratorParams): DecoratedFunction => {
+    return async function (...args): Promise<TimerResults & Object> {
         let duration = performance.now()
         const results = await testCase(...args)
         duration = performance.now() - duration
         return Object.assign({ duration }, results)
     }
+}
 
 export const withErrorHandler = ({
     testCase,
-}: TestDecoratorParams): DecoratedFunction =>
-    async function (...args): Promise<ErrorHandlerResults & Object> {
-        let error = null
+    id,
+}: TestDecoratorParams): DecoratedFunction => {
+    return async function (...args): Promise<ErrorHandlerResults & Object> {
+        let error: TestError | null = null
         let results: any
         try {
             results = await testCase(...args)
         } catch (e: any) {
             error = e instanceof Error ? e : new Error(e)
+            error.id = id
         }
 
         return Object.assign({ error }, results)
     }
+}
 
 export const withBeforeAndAfterHooks = ({
     testCase,
     hooks,
-}: TestDecoratorParams): DecoratedFunction =>
-    async function (): Promise<any> {
+}: TestDecoratorParams): DecoratedFunction => {
+    return async function (): Promise<any> {
         const state = await hooks![SETUP_HOOK]()
         const results = await testCase(state)
         await hooks![TEARDOWN_HOOK](state)
         return results
     }
+}
 
 export const decorateTestFunction = ({
     testCase,
