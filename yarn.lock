@@ -788,9 +788,9 @@ aggregate-error@^3.0.0:
     indent-string "^4.0.0"
 
 alcides@^1.4.4:
-  version "1.4.8"
-  resolved "https://registry.yarnpkg.com/alcides/-/alcides-1.4.8.tgz#018ac03010ae62f66532ec42e946cb81599e951d"
-  integrity sha512-ut9yYzWnBdDLw0Re5EcFl3a3CR3cA3KqFE3wQrc4+NTC6W8WZux0hfCYkNG0qlbWy17q0uIR+pBlikhHDmrQiA==
+  version "1.4.9"
+  resolved "https://registry.yarnpkg.com/alcides/-/alcides-1.4.9.tgz#13c78f484bb5c75b022aaf93d140757b163780c1"
+  integrity sha512-qyDyv1/MbcsSI0VCoKlp7h1d+Qdaq1AFNyYmP2MJjdLMB4aHb8zovT5kXgD+RsMJj580wmVohIX4YdSbgzeRZg==
   dependencies:
     "@types/alcides" "^1.4.0"
     "@types/chai" "^4.3.0"
@@ -1707,9 +1707,9 @@ duplexer3@^0.1.4:
   integrity sha1-7gHdHKwO08vH/b6jfcCo8c4ALOI=
 
 electron-to-chromium@^1.4.71:
-  version "1.4.73"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.73.tgz#422f6f514315bcace9615903e4a9b6b9fa283137"
-  integrity sha512-RlCffXkE/LliqfA5m29+dVDPB2r72y2D2egMMfIy3Le8ODrxjuZNVo4NIC2yPL01N4xb4nZQLwzi6Z5tGIGLnA==
+  version "1.4.74"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.74.tgz#f444036a90ffe75f6423b635e77edd4cc9e6cb2f"
+  integrity sha512-DvQ20M0I4dIH8KcAo7n7E4OEeNafZ1N8z6g6ck+ALCM0ZoV6mpjaX6ekjs31zKlqPzacU3lmjG9PZEa1mQhEpQ==
 
 emoji-regex@^8.0.0:
   version "8.0.0"
