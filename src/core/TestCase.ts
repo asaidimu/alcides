@@ -91,9 +91,10 @@ export const decorateTestFunction = ({
     testCase,
     timeout,
     hooks,
+    id,
 }: TestDecoratorParams): DecoratedFunction => {
     const timed = withTimer({ testCase })
     const limited = withTimeOut({ testCase: timed, timeout })
-    const handled = withErrorHandler({ testCase: limited })
+    const handled = withErrorHandler({ testCase: limited, id })
     return withBeforeAndAfterHooks({ testCase: handled, hooks })
 }

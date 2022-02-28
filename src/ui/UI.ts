@@ -35,8 +35,8 @@ const getRunTimeErrors = ({
     errors,
 }: {
     errors: TestRunnerOutputErrors
-}): string =>
-    Object.values(errors)
+}): string => {
+    return Object.values(errors)
         .flat()
         .map((error: TestError) =>
             styleError({
@@ -45,7 +45,8 @@ const getRunTimeErrors = ({
                 error,
             })
         )
-        .join('\n')
+        .join('\n\n')
+}
 
 const getStatus = ({ results }: { results: TestRunnerOutputResults }): string =>
     Object.entries(results)

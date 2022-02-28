@@ -1,4 +1,8 @@
-import { SETUP_HOOK, TEARDOWN_HOOK } from '../../src/core/Constants.js'
+import {
+    ERR_TEST_TIMEOUT,
+    SETUP_HOOK,
+    TEARDOWN_HOOK,
+} from '../../src/core/Constants.js'
 import { runTestCase } from '../../src/core/TestCaseRunner.js'
 
 suite('TestCaseRunner', () => {
@@ -38,6 +42,7 @@ suite('TestCaseRunner', () => {
         const [_, error] = await runTestCase(fixture)
 
         assert.deepEqual(error!.message, err_msg)
+        assert.deepEqual(error!.id, fixture.id)
     })
 
     test('Run tests asynchronously.', async (fixture: State) => {
@@ -53,6 +58,7 @@ suite('TestCaseRunner', () => {
         const [_, error] = await runTestCase(fixture)
 
         assert.isNotNull(error)
+        assert.deepEqual(error!.id, 'Example')
     })
 
     test('Test runs are timed.', async (fixture: State) => {
@@ -76,6 +82,7 @@ suite('TestCaseRunner', () => {
         fixture.timeout = 50
         const [_, error] = await runTestCase(fixture)
         assert.isNotNull(error)
+        assert.deepEqual(error!.code, ERR_TEST_TIMEOUT)
     })
 
     test('Run tests with hooks.', async (fixture: State) => {
