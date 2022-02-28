@@ -1,3 +1,10 @@
+## [1.4.9](https://github.com/asaidimu/alcides/compare/v1.4.8...v1.4.9) (2022-02-28)
+
+
+### Bug Fixes
+
+* add id to error ([428aa7d](https://github.com/asaidimu/alcides/commit/428aa7d00f632aee2e91202a941759535cc3e76b))
+
 ## [1.4.8](https://github.com/asaidimu/alcides/compare/v1.4.7...v1.4.8) (2022-02-25)
 
 
