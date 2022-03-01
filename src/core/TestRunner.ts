@@ -8,9 +8,9 @@ import { combineOutPut, createTestRunnerOutput } from './Results.js'
 
 const workerPath: string = ((): string => {
     const url = import.meta.url
-
+    const base = 'Worker.js'
     return path.format({
-        base: 'Worker.js',
+        base,
         dir: url.substring(7).slice(0, url.lastIndexOf('/') - 7),
     })
 })()
@@ -29,7 +29,7 @@ const runWorker = async ({
     return new Promise((resolve) => {
         worker.on('error', (error) => {
             const result = createTestRunnerOutput()
-            result.errors.load.push(error)
+            result.errors.push(error)
             resolve(result)
             worker.terminate()
         })
@@ -82,10 +82,7 @@ export const runTests = async ({
         )
     )
 
-    results.push(createTestRunnerOutput())
     const output = combineOutPut(results)
-
-    output.hasErrors = Object.values(output.errors).flat().length > 0
 
     return output
 }

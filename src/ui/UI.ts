@@ -31,13 +31,8 @@ function getSummary({ results }: { results: TestRunnerOutputResults }): string {
     return styleSummary(params)
 }
 
-const getRunTimeErrors = ({
-    errors,
-}: {
-    errors: TestRunnerOutputErrors
-}): string => {
-    return Object.values(errors)
-        .flat()
+const getRunTimeErrors = ({ errors }: { errors: Array<TestError> }): string => {
+    return errors
         .map((error: TestError) =>
             styleError({
                 indentation: '  ',

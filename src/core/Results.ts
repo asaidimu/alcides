@@ -2,34 +2,40 @@ import { setPosition } from './SourceMap.js'
 
 export const createTestRunnerOutput = (): TestRunnerOutput => ({
     results: {},
-    errors: {
-        test: [],
-        hook: [],
-        load: [],
-    },
+    errors: [],
 })
 
 export const combineOutPut = (
     output: Array<TestRunnerOutput>
 ): TestRunnerOutput => {
-    const combineObjectEntries = (
-        all: TestRunnerOutput,
-        [key, value]: [string, Array<any>]
-    ) => {
-        if (Array.isArray(all[key])) all[key] = all[key].concat(value)
-        else all[key] = value
-        return all
+    type TestResultObject = { [key: string]: Array<TestResult> }
+
+    const combineResults = function (
+        ...args: Array<TestResultObject>
+    ): TestResultObject {
+        const entries = args.map(Object.entries).flat()
+
+        return entries.reduce(
+            (
+                all: TestResultObject,
+                [key, value]: [string, Array<TestResult>]
+            ) => {
+                all[key] = all[key] ? all[key].concat(value) : value
+                return all
+            },
+            {}
+        )
     }
 
     const reducer = (all: TestRunnerOutput, curr: TestRunnerOutput) => {
-        return Object.entries(all).reduce((a, [key, value]: [string, any]) => {
-            const entries: any = [value, curr[key]].map(Object.entries).flat()
-            a[key] = entries.reduce(combineObjectEntries, {})
-            return a
-        }, <TestRunnerOutput>{})
+        all.errors = all.errors.concat(curr.errors)
+
+        all.results = combineResults(all.results, curr.results)
+
+        return all
     }
 
-    return output.reduce(reducer)
+    return output.reduce(reducer, createTestRunnerOutput())
 }
 
 export const copyError = (error: TestError): TestError =>
@@ -46,27 +52,14 @@ export const serializeOutPutErrors = ({
 }: {
     output: TestRunnerOutput
 }): TestRunnerOutput => {
-    const errors = Object.entries(output.errors).map(
-        ([key, value]: [string, Array<TestError>]) => {
-            return [key, value.map(copyError)]
-        }
-    )
-
-    output.errors = Object.fromEntries(errors)
+    output.errors = output.errors.map(copyError)
     return output
 }
 
-export const positionErrors = async (input: {
-    [key: string]: Array<TestError>
-}): Promise<any> => {
-    const errors = await Promise.all(
-        Object.entries(input).map(
-            async ([key, value]: [string, Array<TestError>]) => {
-                return [key, await Promise.all(value.map(setPosition))]
-            }
-        )
-    )
-    return Object.fromEntries(errors)
+export const positionErrors = async (input: Array<TestError>): Promise<any> => {
+    const errors = await Promise.all(input.map(setPosition))
+
+    return errors
 }
 
 export const aggregateOutPut = async ({
@@ -77,25 +70,21 @@ export const aggregateOutPut = async ({
     errors: Array<TestError>
 }): Promise<TestRunnerOutput> => {
     let output: TestRunnerOutput = createTestRunnerOutput()
-    output.errors.load = errors
+
+    output.errors = errors
 
     output = results.reduce((all: TestRunnerOutput, curr: TestSuiteResults) => {
         all.results[curr.id] = curr.results
 
-        Object.entries(curr.errors).forEach(
-            ([key, value]: [string, Array<TestError>]) => {
-                if (Array.isArray(all.errors[key])) {
-                    all.errors[key] = all.errors[key].concat(value)
-                } else {
-                    all.errors[key] = value
-                }
-            }
-        )
+        Object.values(curr.errors).forEach((value: Array<TestError>) => {
+            all.errors = all.errors.concat(value)
+        })
 
         return all
     }, output)
 
     output.errors = await positionErrors(output.errors)
 
-    return serializeOutPutErrors({ output })
+    output = serializeOutPutErrors({ output })
+    return output
 }

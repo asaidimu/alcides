@@ -38,7 +38,7 @@ suite('Test Runner', () => {
         const output: TestRunnerOutput = await runTests({ config })
 
         const passed = getPassed(output.results)
-        assert.equal(output!.errors.load.length, 1) // test 3 fails to load
+        assert.equal(output!.errors.length, 1) // test 3 fails to load
         assert.equal(passed, 8) // 8 of 9 run
     })
 
@@ -46,7 +46,7 @@ suite('Test Runner', () => {
         config.parallel = true
         const output = await runTests({ config })
         const passed = getPassed(output.results)
-        assert.equal(output!.errors.load.length, 1) // test 3 fails to load
+        assert.equal(output!.errors.length, 1) // test 3 fails to load
         assert.equal(passed, 8) // 8 of 9 run
     })
 })

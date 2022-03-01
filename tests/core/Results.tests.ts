@@ -4,17 +4,32 @@ suite('Results', () => {
     test('Test output combination.', () => {
         const outputs: Array<TestRunnerOutput> = [
             {
-                results: { A: [] },
-                errors: { test: [], hook: [], load: [] },
+                results: { A: [{ id: 'a', duration: 0, passed: false }] },
+                errors: [{ id: 'a', name: 'a', message: 'a' }],
             },
-            { results: { B: [] }, errors: { test: [], hook: [], load: [] } },
+            {
+                results: {
+                    A: [{ id: 'b', duration: 0, passed: false }],
+                    B: [{ id: 'a', duration: 0, passed: false }],
+                },
+                errors: [{ id: 'b', name: 'b', message: 'b' }],
+            },
         ]
 
         const output = combineOutPut(outputs)
         assert.deepEqual(
             {
-                results: { A: [], B: [] },
-                errors: { test: [], hook: [], load: [] },
+                results: {
+                    A: [
+                        { id: 'a', duration: 0, passed: false },
+                        { id: 'b', duration: 0, passed: false },
+                    ],
+                    B: [{ id: 'a', duration: 0, passed: false }],
+                },
+                errors: [
+                    { id: 'a', name: 'a', message: 'a' },
+                    { id: 'b', name: 'b', message: 'b' },
+                ],
             },
             output
         )
