@@ -116,3 +116,11 @@ declare interface Config {
     watch: boolean
     files: []
 }
+
+declare interface Arguments extends Config {
+    [x: string]: unknown
+    $0: string
+    _: (string | number)[]
+    help: unknown
+    config: string
+}

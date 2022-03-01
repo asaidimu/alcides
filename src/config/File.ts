@@ -34,6 +34,9 @@ export const readConfig = async ({
         return null
     }
 
+    if (!file.match(/^\/.*/))
+        file = path.format({ base: file, dir: process.cwd() })
+
     const require = createRequire(process.cwd())
 
     let data

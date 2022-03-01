@@ -12,12 +12,9 @@ const defaultConfig: Config = {
 }
 
 export default await (async (): Promise<Config> => {
-    const file = await getConfigFile()
-    const config = (await readConfig({ file })) || {}
-
     const argv = getArguments()
-
+    const file = argv?.config ? argv.config : await getConfigFile()
+    const config = (await readConfig({ file })) || {}
     const result = Object.assign(defaultConfig, config, argv)
-
     return <Config>result
 })()

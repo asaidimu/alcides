@@ -1,19 +1,5 @@
 import yargs from 'yargs'
 
-type Arguments =
-    | {
-          [x: string]: unknown
-          help: unknown
-          $0: string
-          _: (string | number)[]
-      }
-    | Promise<{
-          [x: string]: unknown
-          help: unknown
-          $0: string
-          _: (string | number)[]
-      }>
-
 export const getArguments = (): Arguments => {
     const args: any = {
         verbose: {
@@ -48,16 +34,23 @@ export const getArguments = (): Arguments => {
             alias: 't',
             describe: 'Test timout in ms.',
         },
+        config: {
+            type: 'string',
+            alias: 'c',
+            describe: 'Path to alcides configuration',
+        },
     }
 
     const epilog = 'Documentation at https://www.npmjs.com/package/alcides'
 
     const usage = 'Usage:\n  alcides [opts..]'
-    return yargs(process.argv.slice(2))
-        .options(args)
-        .usage(usage)
-        .alias('h', 'help')
-        .epilog(epilog).argv
+    return <Arguments>(
+        yargs(process.argv.slice(2))
+            .options(args)
+            .usage(usage)
+            .alias('h', 'help')
+            .epilog(epilog).argv
+    )
 }
 
 export default getArguments
