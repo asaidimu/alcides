@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/asaidimu/alcides/compare/v1.4.10...v1.5.0) (2022-03-02)
+
+
+### Features
+
+* add lsp feature ([b3ff1ad](https://github.com/asaidimu/alcides/commit/b3ff1addf41b2debfe8428cb3765285a44bf9251))
+
 ## [1.4.10](https://github.com/asaidimu/alcides/compare/v1.4.9...v1.4.10) (2022-03-01)
 
 
