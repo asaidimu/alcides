@@ -1,3 +1,10 @@
+## [1.5.1](https://github.com/asaidimu/alcides/compare/v1.5.0...v1.5.1) (2022-03-02)
+
+
+### Bug Fixes
+
+* add dependencies ([a17f6f2](https://github.com/asaidimu/alcides/commit/a17f6f2918828bca49061760684e209f074b4a0d))
+
 # [1.5.0](https://github.com/asaidimu/alcides/compare/v1.4.10...v1.5.0) (2022-03-02)
 
 
