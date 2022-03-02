@@ -1,3 +1,10 @@
+## [1.4.10](https://github.com/asaidimu/alcides/compare/v1.4.9...v1.4.10) (2022-03-01)
+
+
+### Bug Fixes
+
+* add ability to specify config file ([8900a9a](https://github.com/asaidimu/alcides/commit/8900a9a3c8662c07c365e7dd5d2f8245d9a89043))
+
 ## [1.4.9](https://github.com/asaidimu/alcides/compare/v1.4.8...v1.4.9) (2022-02-28)
 
 
