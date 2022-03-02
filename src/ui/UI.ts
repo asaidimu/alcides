@@ -9,7 +9,7 @@ import {
     styleTime,
 } from './Styles.js'
 import chalk from 'chalk'
-import { getTime } from './Utils.js'
+import { getTime } from '../core/Utils.js'
 
 function getSummary({ results }: { results: TestRunnerOutputResults }): string {
     interface Params {

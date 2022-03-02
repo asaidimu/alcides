@@ -107,6 +107,8 @@ declare interface Config {
     parallel: boolean
     watch: boolean
     files: []
+    config?: string
+    lsp?: boolean
 }
 
 declare interface Arguments extends Config {
@@ -114,5 +116,4 @@ declare interface Arguments extends Config {
     $0: string
     _: (string | number)[]
     help: unknown
-    config: string
 }

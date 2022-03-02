@@ -4,15 +4,21 @@ import { report, startUI } from './ui/UI.js'
 export default async () => {
     const config = (await import('./config/Config.js')).default
 
+    if (config.lsp!) {
+        const server = (await import('./lsp/Server.js')).default
+        return server(config)
+    }
+
     if (config.watch) {
         const events = startUI({ config })
-        runOnFileChange({ config, events })
-    } else {
-        const results = await runTests({ config })
-        await report(Object.assign(results!, { verbose: config.verbose }))
+        return runOnFileChange({ config, events })
+    }
 
-        if (results!.hasErrors) {
-            process.exit(123)
-        }
+    const results = await runTests({ config })
+
+    await report(Object.assign(results!, { verbose: config.verbose }))
+
+    if (results.errors.length > 0) {
+        process.exit(123)
     }
 }

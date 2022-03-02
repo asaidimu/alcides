@@ -39,6 +39,10 @@ export const getArguments = (): Arguments => {
             alias: 'c',
             describe: 'Path to alcides configuration',
         },
+        lsp: {
+            type: 'boolean',
+            describe: 'Start alcides as an LSP provider.',
+        },
     }
 
     const epilog = 'Documentation at https://www.npmjs.com/package/alcides'
