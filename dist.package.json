@@ -27,6 +27,8 @@
         "ora": "^6.0.1",
         "fast-glob": "^3.2.11",
         "yargs": "^17.3.1",
+        "vscode-languageserver": "^7.0.0",
+        "vscode-languageserver-textdocument": "^1.0.4",
         "source-map": "^0.7.3"
     },
     "keywords": [
