@@ -21,6 +21,11 @@ declare interface SourcePosition {
 declare interface TestCase {
     id: string
     testCase: TestFunction
+    position?: {
+        source: string
+        line: number
+        column: number
+    }
 }
 
 declare interface TestFunction {
@@ -30,6 +35,11 @@ declare interface TestFunction {
 declare interface TestHook {
     (state?: any): any
     id?: string
+    position?: {
+        source: string
+        line: number
+        column: number
+    }
 }
 
 declare interface SetUpHook {
@@ -78,8 +88,12 @@ declare interface TestCollectorInterface {
 }
 
 declare interface TestSuiteCreator {
-    addTest: (id: string, testCase: TestFunction) => void
-    addHook: (id: string, fun: TestHook) => void
+    addTest: (
+        id: string,
+        testCase: TestFunction,
+        position: SourcePosition
+    ) => void
+    addHook: (id: string, fun: TestHook, position: SourcePosition) => void
     getTestSuite: () => TestSuite
     id: string
 }

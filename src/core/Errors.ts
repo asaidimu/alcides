@@ -13,6 +13,7 @@ export const timeoutError = () => {
 }
 export const invalidActionError = (description: string) => {
     const error: any = new Error(`Invalid call to ${String(description)}`)
+    Error.captureStackTrace(error, invalidActionError)
     error.code = ERR_INVALID_ACTION
     return error
 }

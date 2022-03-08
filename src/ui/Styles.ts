@@ -24,7 +24,7 @@ export const styleErrorStack = ({ indentation, stack }: any): string => {
 export const styleError = ({ indentation, id, error }: any): string => {
     id.length > 0 ? (id = `${chalk.bold.green(id)}`) : ''
     let result = `${indentation}${id}`
-    if (error.stack) {
+    if (error.stack && error.position) {
         result += `\n${indentation}${styleErrorPosition(error.position)}`
         result += `\n${styleErrorStack({ indentation, stack: error.stack })}`
     }

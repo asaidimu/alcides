@@ -58,9 +58,17 @@ export const positionFromStackFrame = ({
     return getPosition(split)
 }
 
-export const setPosition = async (error: TestError): Promise<TestError> => {
+type Positioned = { position?: SourcePosition; stack?: string }
+
+export const setPosition = async (
+    error: Positioned,
+    offset: number | null = null
+): Promise<Positioned> => {
     const frames = error.stack!.split('\n')
-    const frame = frames.find((str: string) => str.match(/\s+at\s.*/g))!
+    const frame =
+        offset === null
+            ? frames.find((str: string) => str.match(/\s+at\s.*/g))!
+            : frames[offset]
     const position = positionFromStackFrame({ frame })
 
     error.position = await getSourcePosition(position)
