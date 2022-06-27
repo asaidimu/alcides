@@ -9,9 +9,10 @@ type checkResults = Promise<Array<TestError>>
 
 export const checkHooks = async (hooks: checkOpts): checkResults => {
     const errors: Array<TestError> = []
+    let state;
     for (const hook of Object.values(hooks)) {
         try {
-            await hook()
+            state = await hook(state)
         } catch (e: any) {
             const error: TestError = e instanceof Error ? e : new Error(e)
             error.id = hook.id

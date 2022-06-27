@@ -16,7 +16,7 @@ suite('TestSuiteRunner', () => {
         assert.equal(results.length, 0)
     })
 
-    test('Run single suites.', async ({ utils, getSuites }: any) => {
+    test('Run suite', async ({ utils, getSuites }: any) => {
         utils.suite('Example', () => {
             utils.test('E', () => {})
         })
@@ -52,6 +52,33 @@ suite('TestSuiteRunner', () => {
         assert.isFalse(results.find((i) => i.id == case2)?.passed)
     })
 
+    test('State is passed down', async ({ getSuites, utils }: any) => {
+        const [setUpError, tearDownError] = ['SetUp Error', 'TearDown Error']
+        interface State {
+            hello: "world"
+        }
+
+        const { test, setUp, tearDown, suite } = utils
+        suite('TestSuite', () => {
+            setUp(():State => ({ hello: "world" }))
+
+            tearDown(({ hello }: State) => {
+                assert.deepEqual(hello, "world")
+            })
+
+            test('none', () => {})
+        })
+
+        const suiteResults: Array<TestSuiteResults> = await runTestSuite({
+            timeout: 1000,
+            suite: getSuites(),
+        })
+
+        const { errors } = suiteResults[0]
+        assert.strictEqual(errors.hook.length, 0)
+
+    })
+
     test('Catch failing test fixtures.', async ({ getSuites, utils }: any) => {
         const [setUpError, tearDownError] = ['SetUp Error', 'TearDown Error']
 
@@ -83,6 +110,8 @@ suite('TestSuiteRunner', () => {
             tearDownError
         )
     })
+
+
 
     test('Run multiple test suites.', async ({ getSuites, utils }: any) => {
         const id = '12345'

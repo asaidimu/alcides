@@ -108,9 +108,10 @@ suite('TestCaseRunner', () => {
     test('State is passed from setUp down.', async (fixture: State) => {
         fixture.hooks[SETUP_HOOK] = () => ({ message: 'Hello, World!' })
 
-        fixture.hooks[TEARDOWN_HOOK] = (opts: any) => {
-            delete opts.message
+        fixture.hooks[TEARDOWN_HOOK] = ({message}) => {
+            assert.deepEqual('Hello, World!', message)
         }
+
         fixture.testCase = async ({ message }) => {
             assert.deepEqual('Hello, World!', message)
         }
