@@ -1,3 +1,10 @@
+## [1.5.3](https://github.com/asaidimu/alcides/compare/v1.5.2...v1.5.3) (2022-06-27)
+
+
+### Bug Fixes
+
+* fix bug in checkHook method of TestSuiteRunner ([a8b6487](https://github.com/asaidimu/alcides/commit/a8b64875c59f771da0317056e6618df45c23b912))
+
 ## [1.5.2](https://github.com/asaidimu/alcides/compare/v1.5.1...v1.5.2) (2022-06-24)
 
 
